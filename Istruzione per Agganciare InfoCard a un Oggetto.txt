@@ -1,0 +1,3 @@
+istruzioni per aggangiare carta info a oggetto afferrabile: Piazza una GlassCardActor vicino a un oggetto afferrabile, e nel suo Details metti bStartClosed = true (partirà invisibile).
+Seleziona l'oggetto afferrabile del VR Template (quelli con il GrabComponent) → pulsante + Add nel Details → cerca Grab Info Trigger.
+Seleziona il componente appena aggiunto → campo Linked Card → usa il menu a tendina o la pipetta per puntare alla scheda in scena.

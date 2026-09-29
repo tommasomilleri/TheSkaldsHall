@@ -1,24 +1,24 @@
-# === Cartelle generate da Unreal (mai committare) ===
-**/Saved/
-**/Intermediate/
-**/DerivedDataCache/
-**/Build/
+# === Cartelle generate da Unreal Engine (Mai committare) ===
 **/Binaries/
+**/Build/
+**/DerivedDataCache/
+**/Intermediate/
+**/Saved/
 
-# === File generati da Visual Studio / build ===
+# === File di Visual Studio e compilatori ===
 .vs/
 **/.vs/
 *.vsconfig
 *.sln
 *.slnx
+*.suo
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
-*.suo
 *.VC.db
 *.VC.opendb
 
-# === Cache e file temporanei vari ===
+# === Cache, log e file temporanei ===
 *.tmp
 *.log
 **/Platforms/*/Intermediate/
@@ -28,29 +28,32 @@
 # === Backup automatici dell'editor ===
 *.uasset.bak
 *.umap.bak
-__ExternalActors__*/**/*.bak
-__ExternalObjects__*/**/*.bak
+**/__ExternalActors__*/**/*.bak
+**/__ExternalObjects__*/**/*.bak
 
-# === OS ===
+# === File di Sistema (Windows/Mac) ===
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# === Contenuti pesanti esclusi dal repo (scene banchetto) ===
+# === CONTENUTI PESANTI SPECIFICI DEL TUO PROGETTO ===
+
+# 1. Esclude la cartella con le reference e gli SFX
+Materiale/
+
+# 2. Esclude gli asset enormi scaricati nel progetto
+**/Content/MetaHumans/
+**/Content/Fab/
+
+# 3. Esclude la scena del banchetto (come avevi impostato tu)
 **/Content/Scene_Banquet/
 **/Content/__ExternalActors__/Scene_Banquet/
 **/Content/__ExternalObjects__/Scene_Banquet/
 
-# Ignora le cartelle temporanee e di compilazione di Unreal Engine (fondamentale)
-The_Skalds_Hall 5.6/Binaries/
-The_Skalds_Hall 5.6/DerivedDataCache/
-The_Skalds_Hall 5.6/Intermediate/
-The_Skalds_Hall 5.6/Saved/
-.vs/
-
-# Ignora le tue cartelle con asset giganti (audio, MetaHumans, reference)
-Materiale/
-The_Skalds_Hall 5.6/Content/MetaHumans/
-The_Skalds_Hall 5.6/Content/Fab/
+# 4. Esclude singole estensioni multimediali pesanti ovunque si trovino
 *.wav
+*.mp3
+*.mp4
 *.pdf
+*.zip
+*.rar

@@ -1,8 +1,0 @@
-Saved/
-Intermediate/
-DerivedDataCache/
-Build/
-Binaries/
-/Content/Scene_Banquet/
-/Content/ExternalActors/Scene_Banquet/
-**/Content/ExternalObjects/Scene_Banquet/

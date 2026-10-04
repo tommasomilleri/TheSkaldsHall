@@ -25,4 +25,5 @@ private:
 	// Li teniamo come membri perché devono vivere quanto il widget.
 	TSharedPtr<FSlateRoundedBoxBrush> GlassBrush;
 	TSharedPtr<FSlateRoundedBoxBrush> HighlightBrush;
+	TSharedPtr<FSlateRoundedBoxBrush> HighlightBrushSoft;
 };

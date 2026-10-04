@@ -59,6 +59,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UWidgetComponent> CardWidget;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UStaticMeshComponent> GlassPanel;
+
+	/** Materiale M_LiquidGlass (vedi note in fondo al file). */
+	UPROPERTY(EditAnywhere, Category = "Card|Style")
+	TObjectPtr<UMaterialInterface> GlassMaterial;
 
 private:
 	float BaseZ = 0.f;         // quota di partenza per l'ondeggiamento

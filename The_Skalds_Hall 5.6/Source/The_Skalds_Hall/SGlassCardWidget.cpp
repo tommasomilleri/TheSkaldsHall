@@ -18,7 +18,10 @@ void SGlassCardWidget::Construct(const FArguments& InArgs)
 
     // Lo "specular highlight" del tuo ::after — fascia chiara in alto
     HighlightBrush = MakeShared<FSlateRoundedBoxBrush>(
-        FLinearColor(1.f, 1.f, 1.f, 0.10f), 32.f);
+        FLinearColor(1.f, 1.f, 1.f, 0.14f), 32.f);
+    HighlightBrushSoft = MakeShared<FSlateRoundedBoxBrush>(
+        FLinearColor(1.f, 1.f, 1.f, 0.05f), 32.f);
+
 
     ChildSlot
         [
@@ -38,7 +41,7 @@ void SGlassCardWidget::Construct(const FArguments& InArgs)
                                 [
                                     SNew(STextBlock)
                                         .Text(InArgs._Title)
-                                        .Font(FCoreStyle::GetDefaultFontStyle("Bold", 26))
+                                        .Font(FCoreStyle::GetDefaultFontStyle("Bold", 24))
                                         .ColorAndOpacity(FLinearColor::White)
                                         // come text-shadow nel CSS:
                                         .ShadowOffset(FVector2D(0, 1.5f))
@@ -62,7 +65,7 @@ void SGlassCardWidget::Construct(const FArguments& InArgs)
             // STRATO 2: highlight superiore (solo decorativo, non cliccabile)
             + SOverlay::Slot().VAlign(VAlign_Top)
                 [
-                    SNew(SBox).HeightOverride(40.f)
+                    SNew(SBox).HeightOverride(80.f)
                         [
                             SNew(SBorder)
                                 .BorderImage(HighlightBrush.Get())

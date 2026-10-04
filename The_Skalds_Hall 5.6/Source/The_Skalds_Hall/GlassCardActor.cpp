@@ -3,7 +3,8 @@
 #include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "MotionControllerComponent.h"
-
+#include "Components/StaticMeshComponent.h"
+#include "UObject/ConstructorHelpers.h"
 AGlassCardActor::AGlassCardActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -15,19 +16,33 @@ AGlassCardActor::AGlassCardActor()
 	CardWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("CardWidget"));
 	CardWidget->SetupAttachment(Root);
 	CardWidget->SetWidgetSpace(EWidgetSpace::World);     // nel mondo, non a schermo
-	CardWidget->SetDrawSize(FVector2D(500.f, 170.f));    // risoluzione in pixel
+	CardWidget->SetDrawSize(FVector2D(1000.f, 340.f));    // risoluzione in pixel
 	CardWidget->SetTwoSided(true);                       // visibile da dietro
 	CardWidget->SetBlendMode(EWidgetBlendMode::Transparent); // serve per la trasparenza!
-	CardWidget->SetWorldScale3D(FVector(0.1f));          // 500px -> ~50cm reali
+	CardWidget->SetWorldScale3D(FVector(0.05f));          // 500px -> ~50cm reali
+	CardWidget->SetReceiveHardwareInput(false);
+	CardWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GlassPanel = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GlassPanel"));
+	GlassPanel->SetupAttachment(Root);
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> PlaneMesh(
+		TEXT("/Engine/BasicShapes/Plane.Plane"));
+	if (PlaneMesh.Succeeded()) GlassPanel->SetStaticMesh(PlaneMesh.Object);
+	GlassPanel->SetRelativeRotation(FRotator(90.f, 0.f, 90.f));
+	GlassPanel->SetRelativeLocation(FVector(-0.5f, 0.f, 0.f)); // 5mm dietro il widget
+	GlassPanel->SetRelativeScale3D(FVector(0.52f, 0.18f, 1.f));
+	GlassPanel->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 }
 
 void AGlassCardActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Colleghiamo il nostro widget Slate al componente
-	CardWidget->SetSlateWidget(
-		SNew(SGlassCardWidget).Title(Title).Body(Body));
+	TSharedRef<SWidget> Card = SNew(SGlassCardWidget).Title(Title).Body(Body);
+	Card->SetVisibility(EVisibility::HitTestInvisible); // visibile, intoccabile
+	CardWidget->SetSlateWidget(Card);
+	if (GlassMaterial) { GlassPanel->SetMaterial(0, GlassMaterial); }
+
 
 	BaseZ = GetActorLocation().Z;
 	CurrentScale = TargetScale = bStartClosed ? 0.f : 1.f;
@@ -68,7 +83,14 @@ void AGlassCardActor::Tick(float DeltaTime)
 	if (TargetScale <= 0.f && CurrentScale < 0.01f) { SetActorHiddenInGame(true); }
 
 	// 2) Se il player la tiene in mano, niente fluttuazione/rotazione
-	if (IsHeld()) return;
+	const bool bHeldNow = IsHeld();
+	if (bHeldNow) { bWasHeldLastTick = true; return; }
+	if (bWasHeldLastTick)
+	{
+		bWasHeldLastTick = false;
+		BaseZ = GetActorLocation().Z; // nuova quota di riposo = dove l'hai lasciata
+		FloatTime = 0.f;
+	}
 
 	// 3) Fluttuazione: seno sulla Z
 	if (FloatAmplitude > 0.f)

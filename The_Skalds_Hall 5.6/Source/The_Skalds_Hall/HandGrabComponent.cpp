@@ -1,6 +1,6 @@
 #include "HandGrabComponent.h"
 #include "Components/StaticMeshComponent.h"
-
+#include "PhysicsEngine/BodySetup.h"
 UHandGrabComponent::UHandGrabComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;

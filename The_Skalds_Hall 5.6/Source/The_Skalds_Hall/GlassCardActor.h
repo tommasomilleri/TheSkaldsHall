@@ -69,6 +69,7 @@ protected:
 private:
 	float BaseZ = 0.f;         // quota di partenza per l'ondeggiamento
 	float FloatTime = 0.f;     // accumulatore per il seno
+	bool bWasHeldLastTick = false;
 	float TargetScale = 1.f;   // scala verso cui animiamo
 	float CurrentScale = 1.f;  // scala attuale
 	bool IsHeld() const;       // è in mano al player?

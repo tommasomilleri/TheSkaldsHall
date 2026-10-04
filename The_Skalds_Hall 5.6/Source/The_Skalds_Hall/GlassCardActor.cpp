@@ -20,7 +20,6 @@ AGlassCardActor::AGlassCardActor()
 	CardWidget->SetTwoSided(true);                       // visibile da dietro
 	CardWidget->SetBlendMode(EWidgetBlendMode::Transparent); // serve per la trasparenza!
 	CardWidget->SetWorldScale3D(FVector(0.05f));          // 500px -> ~50cm reali
-	CardWidget->SetReceiveHardwareInput(false);
 	CardWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GlassPanel = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GlassPanel"));
 	GlassPanel->SetupAttachment(Root);

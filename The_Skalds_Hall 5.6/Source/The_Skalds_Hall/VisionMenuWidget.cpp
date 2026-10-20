@@ -118,7 +118,7 @@ void UVisionMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	if (VolumeSlider)
+	if (VolumeSlider && !VolumeSlider->OnVolumeChanged.IsAlreadyBound(this,&UVisionMenuWidget::HandleVolumeChanged))
 	{
 		VolumeSlider->OnValueChanged.AddDynamic(this, &UVisionMenuWidget::HandleVolumeChanged);
 	}

@@ -78,6 +78,14 @@ void UVRSettingsSubsystem::ApplyVolume() const
 void UVRSettingsSubsystem::NotifyChanged()
 {
 	OnSettingsChanged.Broadcast();
-	const_cast<UVRSettingsSubsystem*>(this)->SaveSettings();
+	if (UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().SetTimer(SaveDebounceTimer, this,
+			&UVRSettingsSubsystem::SaveSettings, 1.0f, false); // riarmato a ogni modifica
+	}
+	else
+	{
+		SaveSettings();
+	}
 }
 

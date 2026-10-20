@@ -51,6 +51,7 @@ void AGlassCardActor::BeginPlay()
 
 void AGlassCardActor::Open()
 {
+	SetActorTickEnabled(true);
 	SetActorHiddenInGame(false);
 	TargetScale = 1.f;  // il Tick anima la scala verso 1
 }
@@ -79,8 +80,11 @@ void AGlassCardActor::Tick(float DeltaTime)
 	// 1) Animazione apertura/chiusura (interpolazione morbida)
 	CurrentScale = FMath::FInterpTo(CurrentScale, TargetScale, DeltaTime, 10.f);
 	Root->SetRelativeScale3D(FVector(FMath::Max(CurrentScale, 0.001f)));
-	if (TargetScale <= 0.f && CurrentScale < 0.01f) { SetActorHiddenInGame(true); }
-
+	if (TargetScale <= 0.f && CurrentScale < 0.01f)
+	{
+		SetActorHiddenInGame(true);
+		SetActorTickEnabled(false); // Open() deve fare SetActorTickEnabled(true)
+	}
 	// 2) Se il player la tiene in mano, niente fluttuazione/rotazione
 	const bool bHeldNow = IsHeld();
 	if (bHeldNow) { bWasHeldLastTick = true; return; }

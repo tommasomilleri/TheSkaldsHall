@@ -41,7 +41,7 @@ void USignificanceManagerComponent::TickComponent(float DeltaTime,
 
 	// Dot < MinViewDot = l'NPC è fuori dal campo visivo (dietro/di lato)
 	const float Dot = FVector::DotProduct(
-		Cam->GetActorForwardVector(), ToNPC.GetSafeNormal());
+		Cam->GetCameraRotation().Vector(), ToNPC.GetSafeNormal());
 
 	const bool bSignificant =
 		DistSq <= FMath::Square(MaxSignificantDistance) && Dot >= MinViewDot;

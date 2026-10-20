@@ -10,6 +10,7 @@ UNPCGazeGreeterComponent::UNPCGazeGreeterComponent()
 
 bool UNPCGazeGreeterComponent::CanSeePlayer() const
 {
+	if (!GetWorld()) return false;
 	const AActor* Owner = GetOwner();
 	const APawn* Player = UGameplayStatics::GetPlayerPawn(this, 0);
 	if (!Owner || !Player) return false;

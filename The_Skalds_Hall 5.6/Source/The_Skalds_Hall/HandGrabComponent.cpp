@@ -101,7 +101,7 @@ void UHandGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 	// Interp esponenziale del delta: morbido e indipendente dal framerate
 	const FVector Step = Delta * FMath::Clamp(DeltaTime * SnapSpeed, 0.f, 1.f);
-	GetOwner()->AddActorWorldOffset(Step);
+	Mesh()->AddWorldOffset(Step);
 
 	if (Delta.SizeSquared() < 0.25f) // < 0.5 cm: snap completato
 	{

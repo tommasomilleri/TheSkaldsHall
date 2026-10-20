@@ -26,7 +26,10 @@ void AStoricaItem::OnItemHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 	{
 		return;
 	}
-	const float Now = GetWorld()->GetTimeSeconds();
+	const UWorld* World = GetWorld();
+	if (!World) return;
+	const float Now = World->GetTimeSeconds();
+
 	if (Now - LastImpactTime < ImpactCooldown)
 	{
 		return;

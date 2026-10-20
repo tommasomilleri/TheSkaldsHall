@@ -82,9 +82,16 @@ void UObjectPoolComponent::Release(AActor* Actor)
 	Available.Add(Actor);
 }
 
-void UObjectPoolComponent::SetActive(AActor* Actor, bool bActive) const
+oid UObjectPoolComponent::SetActive(AActor* Actor, bool bActive) const
 {
 	Actor->SetActorHiddenInGame(!bActive);
 	Actor->SetActorEnableCollision(bActive);
 	Actor->SetActorTickEnabled(bActive);
+	// Fisica: spenta nel parcheggio, riaccesa all'uso (con velocità azzerate)
+	if (UPrimitiveComponent* Prim = Actor->FindComponentByClass<UPrimitiveComponent>())
+	{
+		Prim->SetPhysicsLinearVelocity(FVector::ZeroVector);
+		Prim->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+		Prim->SetSimulatePhysics(bActive && Prim->BodyInstance.bSimulatePhysics);
+	}
 }

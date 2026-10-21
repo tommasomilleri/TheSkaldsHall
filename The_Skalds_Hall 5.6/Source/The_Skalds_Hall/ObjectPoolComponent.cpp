@@ -82,7 +82,7 @@ void UObjectPoolComponent::Release(AActor* Actor)
 	Available.Add(Actor);
 }
 
-oid UObjectPoolComponent::SetActive(AActor* Actor, bool bActive) const
+void UObjectPoolComponent::SetActive(AActor* Actor, bool bActive) const
 {
 	Actor->SetActorHiddenInGame(!bActive);
 	Actor->SetActorEnableCollision(bActive);

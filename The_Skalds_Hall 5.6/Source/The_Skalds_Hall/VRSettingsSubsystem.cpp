@@ -80,8 +80,9 @@ void UVRSettingsSubsystem::NotifyChanged()
 	OnSettingsChanged.Broadcast();
 	if (UWorld* World = GetWorld())
 	{
+		// FIX: Rimossa la parentesi tonda errata dopo SaveDebounceTimer
 		World->GetTimerManager().SetTimer(SaveDebounceTimer, this,
-			&UVRSettingsSubsystem::SaveSettings, 1.0f, false); // riarmato a ogni modifica
+			&UVRSettingsSubsystem::SaveSettings, 1.0f, false);
 	}
 	else
 	{

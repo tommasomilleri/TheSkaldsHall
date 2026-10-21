@@ -5,7 +5,6 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "GameFramework/SaveGame.h"
 #include "VRSettingsSubsystem.generated.h"
-
 /** Dati persistenti delle impostazioni VR. */
 UCLASS()
 class THE_SKALDS_HALL_API UVRSettingsSaveGame : public USaveGame
@@ -79,7 +78,7 @@ private:
 	float MasterVolume = 1.f;
 	bool bSeatedMode = false;
 	float HeightOffset = 0.f;
-
+	FTimerHandle SaveDebounceTimer;
 	/** Alza la camera di 45 cm quando si e' seduti. */
 	static constexpr float SeatedModeZBoost = 45.f;
 

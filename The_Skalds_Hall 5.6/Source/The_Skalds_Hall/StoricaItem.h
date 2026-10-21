@@ -12,8 +12,7 @@ class THE_SKALDS_HALL_API AStoricaItem : public AActor
 public:
 	AStoricaItem();
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Storica")
-	UStaticMeshComponent* Mesh;
-
+	TObjectPtr<UStaticMeshComponent> Mesh;
 	UPROPERTY(EditAnywhere, Category = "Storica|Feedback")
 	USoundBase* ImpactSound;
 

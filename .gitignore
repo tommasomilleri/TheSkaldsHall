@@ -57,3 +57,6 @@ Materiale/
 *.pdf
 *.zip
 *.rar
+!**/Content/Audio/Voices/**/*.wav
+= ECCEZIONE: binari precompilati OVRLipSync (il team non ricompila) =
+!/Plugins/OVRLipSync/Binaries/

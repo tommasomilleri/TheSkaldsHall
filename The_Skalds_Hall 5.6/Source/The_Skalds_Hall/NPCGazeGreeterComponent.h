@@ -12,6 +12,7 @@ class USoundBase;
  * per GazeSecondsRequired secondi (con linea di vista libera),
  * riproduce una battuta audio e/o apre una scheda.
  */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGreet);
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class THE_SKALDS_HALL_API UNPCGazeGreeterComponent : public UActorComponent
 {
@@ -43,6 +44,8 @@ public:
 	/** true = si attiva una volta sola. */
 	UPROPERTY(EditAnywhere, Category = "Greeter")
 	bool bTriggerOnce = true;
+	UPROPERTY(BlueprintAssignable, Category = "Greeter")
+	FOnGreet OnGreet;
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 		FActorComponentTickFunction* ThisTickFunction) override;

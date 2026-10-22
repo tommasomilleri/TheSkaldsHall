@@ -71,17 +71,13 @@
 				"Linux",
 				"Android"
 			]
+		},
+		{
+			"Name": "OVRLipSync",
+			"Enabled": true
 		}
 	],
 	"TargetPlatforms": [
-		"Android",
-		"PS4",
-		"PS5",
-		"Windows",
-		"WindowsNoEditor",
-		"Switch",
-		"XboxOne",
-		"XSX",
-		"VisionOS"
+		"Windows"
 	]
 }

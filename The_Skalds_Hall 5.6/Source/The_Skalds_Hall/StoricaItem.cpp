@@ -21,6 +21,7 @@ void AStoricaItem::BeginPlay()
 void AStoricaItem::OnItemHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	if (!GetWorld()) return;
 	const float Impulse = NormalImpulse.Size();
 	if (Impulse < MinImpulse)
 	{

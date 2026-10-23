@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="980" height="70" viewBox="0 0 980 70">
+  <defs>
+    <linearGradient id="plate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3d3d3d"/><stop offset=".5" stop-color="#1d1d1d"/><stop offset="1" stop-color="#0d0d0d"/>
+    </linearGradient>
+    <radialGradient id="rivet" cx="35%" cy="35%" r="70%">
+      <stop offset="0" stop-color="#d0d0d0"/><stop offset=".5" stop-color="#555"/><stop offset="1" stop-color="#0a0a0a"/>
+    </radialGradient>
+    <filter id="rough" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="1.2" numOctaves="3" seed="4" result="n"/>
+      <feColorMatrix in="n" type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="table" tableValues="0 .35"/></feComponentTransfer>
+      <feComposite in2="SourceGraphic" operator="in"/>
+    </filter>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <g id="pl">
+      <rect width="230" height="50" rx="3" fill="url(#plate)" stroke="#000" stroke-width="2"/>
+      <rect width="230" height="50" rx="3" fill="#fff" filter="url(#rough)"/>
+      <rect x="5" y="5" width="220" height="40" rx="2" fill="none" stroke="#4d4d4d" stroke-width="1"/>
+      <circle cx="11" cy="11" r="3.5" fill="url(#rivet)"/><circle cx="219" cy="11" r="3.5" fill="url(#rivet)"/>
+      <circle cx="11" cy="39" r="3.5" fill="url(#rivet)"/><circle cx="219" cy="39" r="3.5" fill="url(#rivet)"/>
+    </g>
+    <style>
+      .t{font-family:'Cinzel','Trajan Pro','Palatino Linotype',Georgia,serif;font-weight:700;font-size:14px;letter-spacing:2.5px;fill:#cfcfcf}
+      .s{font-family:'Cinzel','Trajan Pro','Palatino Linotype',Georgia,serif;font-weight:700;font-size:14px;letter-spacing:2.5px;fill:#000}
+      .ru{fill:none;stroke:#eef3ff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;filter:url(#glow)}
+    </style>
+  </defs>
+
+  <g transform="translate(5,10)">
+    <use href="#pl" xlink:href="#pl"/>
+    <path class="ru" transform="translate(22,14) scale(.75)" d="M5,0 V30 M5,8 L15,2 M5,15 L15,9"/>
+    <text x="125" y="30" text-anchor="middle" class="s" transform="translate(1,1)">UNREAL ENGINE 5.6</text>
+    <text x="125" y="30" text-anchor="middle" class="t">UNREAL ENGINE 5.6</text>
+  </g>
+  <g transform="translate(250,10)">
+    <use href="#pl" xlink:href="#pl"/>
+    <path class="ru" transform="translate(22,14) scale(.75)" d="M10,30 V0 M10,12 L2,2 M10,12 L18,2"/>
+    <text x="125" y="30" text-anchor="middle" class="s" transform="translate(1,1)">OPENXR · VR</text>
+    <text x="125" y="30" text-anchor="middle" class="t">OPENXR · VR</text>
+  </g>
+  <g transform="translate(495,10)">
+    <use href="#pl" xlink:href="#pl"/>
+    <path class="ru" transform="translate(22,14) scale(.75)" d="M5,0 V30 M5,8 L14,15 L5,22"/>
+    <text x="125" y="30" text-anchor="middle" class="s" transform="translate(1,1)">FORGIATO IN C++</text>
+    <text x="125" y="30" text-anchor="middle" class="t">FORGIATO IN C++</text>
+  </g>
+  <g transform="translate(740,10)">
+    <use href="#pl" xlink:href="#pl"/>
+    <path class="ru" transform="translate(22,14) scale(.75)" d="M3,30 L15,16 L9,8 L3,16 L15,30"/>
+    <text x="125" y="30" text-anchor="middle" class="s" transform="translate(1,1)">SERIOUS GAME</text>
+    <text x="125" y="30" text-anchor="middle" class="t">SERIOUS GAME</text>
+  </g>
+</svg>

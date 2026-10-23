@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="440" viewBox="0 0 1200 440">
+  <defs>
+    <!-- Pietra -->
+    <filter id="stone" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="4" seed="11" result="n"/>
+      <feColorMatrix in="n" type="saturate" values="0" result="g"/>
+      <feComponentTransfer in="g">
+        <feFuncR type="linear" slope="0.30" intercept="0.02"/>
+        <feFuncG type="linear" slope="0.30" intercept="0.02"/>
+        <feFuncB type="linear" slope="0.33" intercept="0.03"/>
+        <feFuncA type="table" tableValues="1 1"/>
+      </feComponentTransfer>
+    </filter>
+    <radialGradient id="vignette" cx="50%" cy="50%" r="65%">
+      <stop offset="55%" stop-color="#000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.85"/>
+    </radialGradient>
+    <!-- Ferro battuto -->
+    <linearGradient id="iron" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f4f4f4"/>
+      <stop offset="0.45" stop-color="#9c9c9c"/>
+      <stop offset="0.55" stop-color="#5e5e5e"/>
+      <stop offset="1" stop-color="#d6d6d6"/>
+    </linearGradient>
+    <!-- Bagliore runico -->
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="3.2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="softglow" x="-20%" y="-50%" width="140%" height="200%">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+
+    <!-- Treccia celtica -->
+    <pattern id="braidH" width="40" height="24" patternUnits="userSpaceOnUse">
+      <g fill="none" stroke-linecap="butt">
+        <path d="M0,6 C10,6 10,18 20,18" stroke="#050505" stroke-width="8"/>
+        <path d="M0,6 C10,6 10,18 20,18" stroke="#8a8a8a" stroke-width="4.5"/>
+        <path d="M0,18 C10,18 10,6 20,6 C30,6 30,18 40,18" stroke="#050505" stroke-width="8"/>
+        <path d="M0,18 C10,18 10,6 20,6 C30,6 30,18 40,18" stroke="#8a8a8a" stroke-width="4.5"/>
+        <path d="M0,18 C10,18 10,6 20,6 C30,6 30,18 40,18" stroke="#d8d8d8" stroke-width="1"/>
+        <path d="M20,18 C30,18 30,6 40,6" stroke="#050505" stroke-width="8"/>
+        <path d="M20,18 C30,18 30,6 40,6" stroke="#8a8a8a" stroke-width="4.5"/>
+        <path d="M0,6 C10,6 10,18 20,18 M20,18 C30,18 30,6 40,6" stroke="#d8d8d8" stroke-width="1"/>
+      </g>
+    </pattern>
+    <pattern id="braidL" href="#braidH" xlink:href="#braidH" patternTransform="translate(38,0) rotate(90)"/>
+    <pattern id="braidR" href="#braidH" xlink:href="#braidH" patternTransform="translate(1186,0) rotate(90)"/>
+
+    <!-- Nodo d'angolo -->
+    <g id="knot" fill="none">
+      <circle r="19" stroke="#050505" stroke-width="8"/>
+      <circle r="19" stroke="#8a8a8a" stroke-width="4"/>
+      <g stroke="#050505" stroke-width="7">
+        <circle cx="0" cy="-6" r="9"/><circle cx="5.2" cy="3" r="9"/><circle cx="-5.2" cy="3" r="9"/>
+      </g>
+      <g stroke="#bdbdbd" stroke-width="3.5">
+        <circle cx="0" cy="-6" r="9"/><circle cx="5.2" cy="3" r="9"/><circle cx="-5.2" cy="3" r="9"/>
+      </g>
+    </g>
+
+    <!-- Rune (Elder Futhark) disegnate come tratti -->
+    <path id="fe" d="M5,0 V30 M5,8 L15,2 M5,15 L15,9"/>
+    <path id="ur" d="M4,30 V0 L16,8 V30"/>
+    <path id="th" d="M5,0 V30 M5,8 L14,15 L5,22"/>
+    <path id="an" d="M5,0 V30 M5,1 L15,8 M5,9 L15,16"/>
+    <path id="ra" d="M5,30 V0 L14,6 L5,13 L15,30"/>
+    <path id="ka" d="M14,6 L5,12 L14,18"/>
+    <path id="ge" d="M3,3 L17,27 M17,3 L3,27"/>
+    <path id="al" d="M10,30 V0 M10,12 L2,2 M10,12 L18,2"/>
+    <path id="ot" d="M3,30 L15,16 L9,8 L3,16 L15,30"/>
+    <path id="ti" d="M10,30 V0 M2,8 L10,0 L18,8"/>
+    <path id="be" d="M5,0 V30 M5,0 L14,7 L5,15 L14,23 L5,30"/>
+    <path id="ma" d="M4,30 V0 M16,30 V0 M4,0 L16,12 M16,0 L4,12"/>
+    <path id="da" d="M3,3 V27 L17,3 V27 Z"/>
+    <path id="so" d="M14,2 L5,12 L15,18 L6,28"/>
+
+    <style>
+      .r{fill:none;stroke:#f5f8ff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;filter:url(#glow);opacity:0;animation:rise 10s linear infinite}
+      @keyframes rise{0%{transform:translateY(0);opacity:0}15%{opacity:.9}65%{opacity:.55}100%{transform:translateY(-300px);opacity:0}}
+      .rs{fill:none;stroke:#eef3ff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;filter:url(#glow);animation:pulse 4s ease-in-out infinite}
+      @keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
+      .halo{animation:pulse 6s ease-in-out infinite}
+      .title{font-family:'Cinzel Decorative','Cinzel','Trajan Pro','Palatino Linotype','Book Antiqua',Georgia,serif;font-weight:700;font-size:76px;letter-spacing:8px}
+      .sub{font-family:'Cinzel','Trajan Pro','Palatino Linotype',Georgia,serif;font-size:17px;letter-spacing:6px;fill:#a9a9a9}
+    </style>
+  </defs>
+
+  <!-- Fondo di pietra -->
+  <rect width="1200" height="440" filter="url(#stone)"/>
+  <rect width="1200" height="440" fill="url(#vignette)"/>
+
+  <!-- Rune che salgono -->
+  <g>
+    <use href="#fe" xlink:href="#fe" x="90"  y="390" class="r" style="animation-delay:-1s"/>
+    <use href="#al" xlink:href="#al" x="160" y="400" class="r" style="animation-delay:-6s;animation-duration:12s"/>
+    <use href="#th" xlink:href="#th" x="240" y="395" class="r" style="animation-delay:-3s;animation-duration:9s"/>
+    <use href="#ot" xlink:href="#ot" x="320" y="405" class="r" style="animation-delay:-8s;animation-duration:13s"/>
+    <use href="#an" xlink:href="#an" x="410" y="395" class="r" style="animation-delay:-4.5s"/>
+    <use href="#ra" xlink:href="#ra" x="480" y="400" class="r" style="animation-delay:-9.5s;animation-duration:11s"/>
+    <use href="#ge" xlink:href="#ge" x="560" y="395" class="r" style="animation-delay:-2s;animation-duration:14s"/>
+    <use href="#ti" xlink:href="#ti" x="640" y="405" class="r" style="animation-delay:-7s"/>
+    <use href="#be" xlink:href="#be" x="720" y="395" class="r" style="animation-delay:-0.5s;animation-duration:12s"/>
+    <use href="#ma" xlink:href="#ma" x="800" y="400" class="r" style="animation-delay:-5s;animation-duration:9.5s"/>
+    <use href="#da" xlink:href="#da" x="880" y="395" class="r" style="animation-delay:-8.5s"/>
+    <use href="#so" xlink:href="#so" x="960" y="405" class="r" style="animation-delay:-3.5s;animation-duration:13s"/>
+    <use href="#ur" xlink:href="#ur" x="1040" y="395" class="r" style="animation-delay:-6.5s;animation-duration:11s"/>
+    <use href="#ka" xlink:href="#ka" x="1100" y="400" class="r" style="animation-delay:-1.5s"/>
+    <use href="#ot" xlink:href="#ot" x="130" y="410" class="r" style="animation-delay:-11s;animation-duration:15s"/>
+    <use href="#th" xlink:href="#th" x="1000" y="410" class="r" style="animation-delay:-12s;animation-duration:15s"/>
+    <use href="#al" xlink:href="#al" x="600" y="410" class="r" style="animation-delay:-10s;animation-duration:16s"/>
+  </g>
+
+  <!-- Cornice intrecciata -->
+  <rect x="14" y="14" width="1172" height="412" fill="none" stroke="#000" stroke-width="2"/>
+  <rect x="40" y="14" width="1120" height="24" fill="url(#braidH)"/>
+  <rect x="40" y="402" width="1120" height="24" fill="url(#braidH)"/>
+  <rect x="14" y="40" width="24" height="360" fill="url(#braidL)"/>
+  <rect x="1162" y="40" width="24" height="360" fill="url(#braidR)"/>
+  <rect x="38" y="38" width="1124" height="364" fill="none" stroke="#3a3a3a" stroke-width="2"/>
+  <rect x="44" y="44" width="1112" height="352" fill="none" stroke="#1a1a1a" stroke-width="1"/>
+  <use href="#knot" xlink:href="#knot" x="26"   y="26"/>
+  <use href="#knot" xlink:href="#knot" x="1174" y="26"/>
+  <use href="#knot" xlink:href="#knot" x="26"   y="414"/>
+  <use href="#knot" xlink:href="#knot" x="1174" y="414"/>
+
+  <!-- Alone dietro il titolo -->
+  <ellipse class="halo" cx="600" cy="195" rx="380" ry="55" fill="#ffffff" opacity=".12" filter="url(#softglow)"/>
+
+  <!-- Filetti -->
+  <g stroke="#6a6a6a" stroke-width="1.5">
+    <line x1="250" y1="118" x2="560" y2="118"/><line x1="640" y1="118" x2="950" y2="118"/>
+  </g>
+  <use href="#ot" xlink:href="#ot" x="590" y="103" class="rs"/>
+
+  <!-- Titolo inciso nel ferro -->
+  <text x="600" y="223" text-anchor="middle" class="title" fill="#000" opacity=".8" transform="translate(3,4)">THE SKALD'S HALL</text>
+  <text x="600" y="223" text-anchor="middle" class="title" fill="url(#iron)" stroke="#0a0a0a" stroke-width="1.5">THE SKALD'S HALL</text>
+
+  <!-- Riga di rune: S K A L D -->
+  <g transform="translate(530,252)">
+    <use href="#so" xlink:href="#so" x="0"   class="rs"/>
+    <use href="#ka" xlink:href="#ka" x="30"  class="rs" style="animation-delay:.4s"/>
+    <use href="#an" xlink:href="#an" x="60"  class="rs" style="animation-delay:.8s"/>
+    <use href="#ra" xlink:href="#ra" x="90"  class="rs" style="animation-delay:1.2s"/>
+    <use href="#da" xlink:href="#da" x="120" class="rs" style="animation-delay:1.6s"/>
+  </g>
+
+  <g stroke="#6a6a6a" stroke-width="1.5">
+    <line x1="250" y1="310" x2="950" y2="310"/>
+  </g>
+  <text x="600" y="345" text-anchor="middle" class="sub">SERIOUS GAME IN REALTÀ VIRTUALE · MITOLOGIA NORRENA</text>
+</svg>

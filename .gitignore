@@ -1,13 +1,23 @@
-# === Cartelle generate da Unreal Engine (Mai committare) ===
+# ==============================================================================
+#  THE SKALD'S HALL — .gitignore
+#  Regola d'oro: le negazioni (!) devono stare DOPO l'esclusione che annullano.
+# ==============================================================================
+
+# === Cartelle generate da Unreal Engine (mai committare) ===
 **/Binaries/
 **/Build/
 **/DerivedDataCache/
 **/Intermediate/
 **/Saved/
+**/Platforms/*/Intermediate/
+**/Plugins/*/Intermediate/
+**/Plugins/*/Binaries/
+*.target
+*.modules
 
-# === File di Visual Studio e compilatori ===
+# === Visual Studio / Rider / compilatori ===
 .vs/
-**/.vs/
+.idea/
 *.vsconfig
 *.sln
 *.slnx
@@ -17,13 +27,15 @@
 *.vcxproj.user
 *.VC.db
 *.VC.opendb
+*.user
+*.pdb
 
-# === Cache, log e file temporanei ===
+# === Cache, log e temporanei ===
 *.tmp
 *.log
-**/Platforms/*/Intermediate/
-**/Plugins/*/Intermediate/
-**/Plugins/*/Binaries/
+*.bak
+*.orig
+*.autosave
 
 # === Backup automatici dell'editor ===
 *.uasset.bak
@@ -31,32 +43,69 @@
 **/__ExternalActors__*/**/*.bak
 **/__ExternalObjects__*/**/*.bak
 
-# === File di Sistema (Windows/Mac) ===
+# === Sistema operativo ===
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# === CONTENUTI PESANTI SPECIFICI DEL TUO PROGETTO ===
+# ==============================================================================
+#  CONTENUTI PESANTI DEL PROGETTO
+# ==============================================================================
 
-# 1. Esclude la cartella con le reference e gli SFX
+# Reference, SFX grezzi
 Materiale/
 
-# 2. Esclude gli asset enormi scaricati nel progetto
+# Asset enormi scaricati (MetaHuman, Fab)
 **/Content/MetaHumans/
 **/Content/Fab/
 
-# 3. Esclude la scena del banchetto (come avevi impostato tu)
+# Scena del banchetto
 **/Content/Scene_Banquet/
 **/Content/__ExternalActors__/Scene_Banquet/
 **/Content/__ExternalObjects__/Scene_Banquet/
 
-# 4. Esclude singole estensioni multimediali pesanti ovunque si trovino
+# Media pesanti ovunque
 *.wav
 *.mp3
 *.mp4
 *.pdf
 *.zip
 *.rar
+*.7z
+
+# ECCEZIONE: voci TTS finali usate da UE (piccole, vanno versionate)
 !**/Content/Audio/Voices/**/*.wav
-= ECCEZIONE: binari precompilati OVRLipSync (il team non ricompila) =
-!/Plugins/OVRLipSync/Binaries/
+
+# ==============================================================================
+#  TOOL TTS (cartella TTS/ nella root del repo)
+#  Si committano SOLO script, csv, requirements.txt e README.
+# ==============================================================================
+TTS/venv/
+TTS/.venv/
+TTS/env/
+TTS/raw/
+TTS/out/
+TTS/final/
+TTS/**/__pycache__/
+TTS/**/*.pyc
+
+# Modelli ML (si scaricano, non si committano)
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+*.onnx
+*.bin
+
+# Ambienti Python ovunque nel repo
+**/venv/
+**/.venv/
+**/__pycache__/
+*.pyc
+
+# ==============================================================================
+#  NOTE
+#  - Plugins/OVRLipSync/OfflineModel/ovrlipsync_offline_model.pb è GIÀ tracciato:
+#    non viene toccato da queste regole.
+#  - I .uasset/.umap si committano (meglio con Git LFS, vedi .gitattributes).
+# ==============================================================================

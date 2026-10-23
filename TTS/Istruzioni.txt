@@ -1,0 +1,14 @@
+Registra un file audio (odino_ref.mp3 o .wav) di 6-15 secondi con la tua voce (o quella di un amico, tono grave, zero musica di sottofondo, zero riverbero, nessun attore famoso per motivi di copyright) e copialo in C:\TTS\odino_ref.mp3
+Convertilo e normalizzalo a 24 kHz mono 16-bit dentro C:\TTS\refs\odino_ref.wav con FFmpeg:
+ffmpeg -i C:\TTS\odino_ref.mp3 -ac 1 -ar 24000 -sample_fmt s16 -af "loudnorm" C:\TTS\refs\odino_ref.wav
+Regole per il CSV: Non superare i ~250 caratteri (massimo 2 frasi) per riga per evitare artefatti metallici. Scrivi i nomi norreni secondo la pronuncia fonetica italiana (es. "Sìgurd", "Miòlnir").   [INTEGRAZIONE PROCEDURALE — Come concatenare battute lunghe con FFmpeg]: Se hai un discorso lungo diviso in odino_parte1.wav e odino_parte2.wav, puoi unirli dopo la generazione con:
+ffmpeg -i C:\TTS\out\odino_parte1.wav -i C:\TTS\out\odino_parte2.wav -filter_complex "[0:0][1:0]concat=n=2:v=0:a=1[out]" -map "[out]" C:\TTS\out\odino_discorso_completo.wav
+Chiudi Unreal Engine per liberare i 12 GB di VRAM (evita l'errore E10 CUDA out of memory) ed esegui lo script:
+cd C:\TTS
+.\venv\Scripts\Activate.ps1
+python gen_voices.py
+empre in PowerShell, esegui questi due comandi per convertire tutti i WAV a 48 kHz mono 16-bit, normalizzare il volume e tagliare i silenzi sia all'inizio sia alla fine (fondamentale per non far restare la bocca aperta a fine frase):
+New-Item -ItemType Directory -Force C:\TTS\final | Out-Null
+Get-ChildItem C:\TTS\out\*.wav | ForEach-Object { ffmpeg -y -i $_.FullName -ar 48000 -ac 1 -sample_fmt s16 -af "loudnorm=I=-16:TP=-1.5:LRA=11,silenceremove=start_periods=1:start_silence=0.1:start_threshold=-50dB,areverse,silenceremove=start_periods=1:start_silence=0.1:start_threshold=-50dB,areverse" "C:\TTS\final\$($_.Name)" }
+
+Crea la cartella The_Skalds_Hall 5.6\Content\Audio\Voices\Odino\ e copia dentro i file .wav presenti in C:\TTS\final\.   Apri Unreal Engine -> accetta l'importazione automatica (oppure trascina i .wav nel Content Browser dentro /Content/Audio/Voices/Odino/).   Fai doppio clic su ciascuna SoundWave importata:Nel pannello Details, cerca Sound Class e imposta SC_Voice (che creeremo tra poco al punto 3.4, oppure creala subito facendo clic destro nel Content Browser -> Sounds -> Classes -> Sound Class e rinominandola SC_Voice).   Cerca Loading Behavior / Streaming e verifica che Streaming sia disattivato (OFF / Force Inline se necessario).   Se userai OVR Lip Sync (Opzione B) e la generazione della LipSyncSequence dovesse uscire vuota, cambia temporaneamente il formato di compressione da Bink a PCM, genera la sequenza e poi rimetti Bink.   

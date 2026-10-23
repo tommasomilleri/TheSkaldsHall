@@ -1,8 +1,8 @@
 <div align="center">
 
-<a href="#prologo"><img src="docs/assets/header.svg" width="100%" alt="The Skald's Hall" title="Entra nella sala, viandante"/></a>
+<a href="#prologo"><img src="assets/header.svg" width="100%" alt="The Skald's Hall" title="Entra nella sala, viandante"/></a>
 
-<img src="docs/assets/badges.svg" width="85%" alt="Unreal Engine 5.6 · OpenXR · C++ · Serious Game" title="Forgiato nel ferro"/>
+<img src="assets/badges.svg" width="85%" alt="Unreal Engine 5.6 · OpenXR · C++ · Serious Game" title="Forgiato nel ferro"/>
 
 <br/>
 
@@ -46,7 +46,7 @@ Sei un **viandante**, e questa notte gli dei hanno deciso di raccontarti chi era
 > ### *"Benvenuto, viandante. Siedi alla mia tavola e ascolta."*
 > **Odino**, all'apertura della sala
 
-<img src="docs/assets/divider.svg" width="70%" alt="ᛟ"/>
+<img src="assets/divider.svg" width="70%" alt="ᛟ"/>
 
 <a id="scaldo"></a>
 <h2>ᛁ · Chi era lo Scaldo</h2>

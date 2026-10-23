@@ -6,8 +6,7 @@ public class The_Skalds_Hall : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG", "Slate", "SlateCore", "HeadMountedDisplay", "XRBase", "Niagara","NavigationSystem" });
-		
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG", "Slate", "SlateCore", "HeadMountedDisplay", "XRBase", "Niagara","NavigationSystem", "AIModule", "GameplayTasks", "AnimGraphRuntime" });
 		
 	}
 }

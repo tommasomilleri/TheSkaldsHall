@@ -82,7 +82,7 @@ Scritta da **Snorri Sturluson** intorno al 1220 come manuale per i giovani scald
 
 <div align="center">
 
-<img src="docs/assets/divider.svg" width="70%" alt="ᛟ"/>
+<img src="assets/divider.svg" width="70%" alt="ᛟ"/>
 
 <a id="mondi"></a>
 <h2>ᛁᛁ · I Nove Mondi</h2>
@@ -115,7 +115,7 @@ La sala in cui entrerai si trova ad **Asgard**: un'eco del **Valhalla**, dove og
 
 <div align="center">
 
-<img src="docs/assets/divider.svg" width="70%" alt="ᛟ"/>
+<img src="assets/divider.svg" width="70%" alt="ᛟ"/>
 
 <a id="pantheon"></a>
 <h2>ᛁᛁᛁ · Coloro che siedono alla tavola</h2>
@@ -175,7 +175,7 @@ Nella sala la sua risata copre il fragore delle torce.
 
 <div align="center">
 
-<img src="docs/assets/divider.svg" width="70%" alt="ᛟ"/>
+<img src="assets/divider.svg" width="70%" alt="ᛟ"/>
 
 <a id="banchetto"></a>
 <h2>ᛁᚢ · La Notte del Banchetto</h2>
@@ -236,7 +236,7 @@ Gli scaldi non insegnavano con i libri, ma con la **voce**, nello **spazio** del
 
 <div align="center">
 
-<img src="docs/assets/divider.svg" width="70%" alt="ᛟ"/>
+<img src="assets/divider.svg" width="70%" alt="ᛟ"/>
 
 <a id="fucina"></a>
 <h2>ᚢ · La Fucina dei Nani</h2>
@@ -319,7 +319,7 @@ graph LR
 
 <div align="center">
 
-<img src="docs/assets/divider.svg" width="70%" alt="ᛟ"/>
+<img src="assets/divider.svg" width="70%" alt="ᛟ"/>
 
 <a id="voce"></a>
 <h2>ᚢᛁ · Dare Voce agli Dei</h2>
@@ -350,7 +350,7 @@ Istruzioni complete in `TTS/Istruzioni.txt`. Licenza XTTS v2: **CPML, uso non co
 
 <div align="center">
 
-<img src="docs/assets/divider.svg" width="70%" alt="ᛟ"/>
+<img src="assets/divider.svg" width="70%" alt="ᛟ"/>
 
 <a id="soglia"></a>
 <h2>ᚢᛁᛁ · Varcare la Soglia</h2>
@@ -418,7 +418,7 @@ cd "TheSkaldsHall/The_Skalds_Hall 5.6"
 
 <div align="center">
 
-<img src="docs/assets/divider.svg" width="70%" alt="ᛟ"/>
+<img src="assets/divider.svg" width="70%" alt="ᛟ"/>
 
 <a id="norne"></a>
 <h2>ᛁᚷ · Ciò che le Norne hanno filato</h2>
@@ -436,7 +436,7 @@ cd "TheSkaldsHall/The_Skalds_Hall 5.6"
 | ᛜ | Nuovi dei alla tavola | in attesa |
 | ᛜ | Il cammino guidato e la prova dello scaldo | in attesa |
 
-<img src="docs/assets/divider.svg" width="70%" alt="ᛟ"/>
+<img src="assets/divider.svg" width="70%" alt="ᛟ"/>
 
 ### ᛒ Coloro che hanno forgiato la sala
 

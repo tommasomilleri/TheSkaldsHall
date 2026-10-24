@@ -81,7 +81,7 @@ bool UNPCDialogueComponent::Say(FName LineKey)
 		if (UAnimInstance* Anim = BodyMesh->GetAnimInstance())
 			Anim->Montage_Play(Line->GestureMontage, 1.f);
 
-	BP_StartLipSync(VoiceAudio, Line->Sound);
+	BP_StartLipSync(VoiceAudio, Line->Sound, Line->LipSyncSequence);
 	OnLineStarted.Broadcast(*Line);
 	return true;
 }
@@ -101,4 +101,55 @@ void UNPCDialogueComponent::HandleAudioFinished()
 	bSpeaking = false;
 	BP_StopLipSync();
 	OnLineFinished.Broadcast();
+}
+void UNPCDialogueComponent::CalculateMetaHumanLipCurves(
+	const TArray<float>& V,
+	float DeltaTime,
+	float& JawOpen,
+	float& MouthClose,
+	float& MouthFunnel,
+	float& MouthPucker,
+	float& MouthSmileL,
+	float& MouthSmileR,
+	float& MouthLowerDownL,
+	float& MouthLowerDownR,
+	float& MouthUpperUpL,
+	float& MouthUpperUpR,
+	float InterpSpeed)
+{
+	// Se l'array non ha i 15 visemi di OVR (o non sta parlando), riporta dolcemente la bocca a 0
+	if (V.Num() < 15)
+	{
+		JawOpen = FMath::FInterpTo(JawOpen, 0.f, DeltaTime, InterpSpeed);
+		MouthClose = FMath::FInterpTo(MouthClose, 0.f, DeltaTime, InterpSpeed);
+		MouthFunnel = FMath::FInterpTo(MouthFunnel, 0.f, DeltaTime, InterpSpeed);
+		MouthPucker = FMath::FInterpTo(MouthPucker, 0.f, DeltaTime, InterpSpeed);
+		MouthSmileL = FMath::FInterpTo(MouthSmileL, 0.f, DeltaTime, InterpSpeed);
+		MouthSmileR = FMath::FInterpTo(MouthSmileR, 0.f, DeltaTime, InterpSpeed);
+		MouthLowerDownL = FMath::FInterpTo(MouthLowerDownL, 0.f, DeltaTime, InterpSpeed);
+		MouthLowerDownR = FMath::FInterpTo(MouthLowerDownR, 0.f, DeltaTime, InterpSpeed);
+		MouthUpperUpL = FMath::FInterpTo(MouthUpperUpL, 0.f, DeltaTime, InterpSpeed);
+		MouthUpperUpR = FMath::FInterpTo(MouthUpperUpR, 0.f, DeltaTime, InterpSpeed);
+		return;
+	}
+
+	// Indici OVR: 1=PP, 2=FF, 3=TH, 4=DD, 5=kk, 6=CH, 7=SS, 8=nn, 9=RR, 10=aa, 11=E, 12=ih, 13=oh, 14=ou
+	const float TargetJawOpen = FMath::Clamp(V[10] * 0.7f + V[13] * 0.5f + V[11] * 0.4f + V[5] * 0.3f + V[12] * 0.25f + V[14] * 0.2f + V[4] * 0.2f, 0.f, 1.f);
+	const float TargetMouthClose = FMath::Clamp(V[1] * 1.0f, 0.f, 1.f);
+	const float TargetMouthFunnel = FMath::Clamp(V[14] * 0.5f + V[6] * 0.6f + V[13] * 0.7f + V[2] * 0.4f, 0.f, 1.f);
+	const float TargetMouthPucker = FMath::Clamp(V[14] * 0.9f + V[9] * 0.4f, 0.f, 1.f);
+	const float TargetMouthSmile = FMath::Clamp(V[12] * 0.5f + V[11] * 0.3f + V[7] * 0.2f, 0.f, 1.f);
+	const float TargetLowerDown = FMath::Clamp(V[10] * 0.4f + V[11] * 0.3f + V[2] * 0.3f + V[3] * 0.3f, 0.f, 1.f);
+	const float TargetUpperUp = FMath::Clamp(V[6] * 0.3f + V[7] * 0.25f + V[10] * 0.2f, 0.f, 1.f);
+
+	JawOpen = FMath::FInterpTo(JawOpen, TargetJawOpen, DeltaTime, InterpSpeed);
+	MouthClose = FMath::FInterpTo(MouthClose, TargetMouthClose, DeltaTime, InterpSpeed);
+	MouthFunnel = FMath::FInterpTo(MouthFunnel, TargetMouthFunnel, DeltaTime, InterpSpeed);
+	MouthPucker = FMath::FInterpTo(MouthPucker, TargetMouthPucker, DeltaTime, InterpSpeed);
+	MouthSmileL = FMath::FInterpTo(MouthSmileL, TargetMouthSmile, DeltaTime, InterpSpeed);
+	MouthSmileR = FMath::FInterpTo(MouthSmileR, TargetMouthSmile, DeltaTime, InterpSpeed);
+	MouthLowerDownL = FMath::FInterpTo(MouthLowerDownL, TargetLowerDown, DeltaTime, InterpSpeed);
+	MouthLowerDownR = FMath::FInterpTo(MouthLowerDownR, TargetLowerDown, DeltaTime, InterpSpeed);
+	MouthUpperUpL = FMath::FInterpTo(MouthUpperUpL, TargetUpperUp, DeltaTime, InterpSpeed);
+	MouthUpperUpR = FMath::FInterpTo(MouthUpperUpR, TargetUpperUp, DeltaTime, InterpSpeed);
 }

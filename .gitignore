@@ -83,7 +83,6 @@ Materiale/
 TTS/venv/
 TTS/.venv/
 TTS/env/
-TTS/raw/
 TTS/out/
 TTS/final/
 TTS/**/__pycache__/

@@ -17,7 +17,8 @@ struct FDialogueLine
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USoundBase> Sound;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UObject> LipSyncSequence;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (MultiLine = true))
 	FText Subtitle;
 
@@ -57,12 +58,28 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Dialogue")
 	FName GreetingKey = TEXT("Saluto");
 
+	/** Calcola e interpola le curve bocca MetaHuman a partire dall'array di 15 visemi di OVR Lip Sync */
+	UFUNCTION(BlueprintCallable, Category = "Dialogue|OVRLipSync")
+	static void CalculateMetaHumanLipCurves(
+		const TArray<float>& Visemes,
+		float DeltaTime,
+		UPARAM(ref) float& JawOpen,
+		UPARAM(ref) float& MouthClose,
+		UPARAM(ref) float& MouthFunnel,
+		UPARAM(ref) float& MouthPucker,
+		UPARAM(ref) float& MouthSmileL,
+		UPARAM(ref) float& MouthSmileR,
+		UPARAM(ref) float& MouthLowerDownL,
+		UPARAM(ref) float& MouthLowerDownR,
+		UPARAM(ref) float& MouthUpperUpL,
+		UPARAM(ref) float& MouthUpperUpR,
+		float InterpSpeed = 20.f);
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type Reason) override;
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Dialogue")
-	void BP_StartLipSync(UAudioComponent* Audio, USoundBase* Sound);
+	void BP_StartLipSync(UAudioComponent* Audio, USoundBase* Sound, UObject* LipSyncSequence);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Dialogue")
 	void BP_StopLipSync();

@@ -1,0 +1,184 @@
+================================================================================
+ THE SKALD'S HALL - VOCI NORRENE
+ 5 personaggi, ognuno riconoscibile a occhi chiusi.
+ Metodo: lo stesso della catena di Thor (asetrate), che suona gia' bene.
+================================================================================
+
+--------------------------------------------------------------------------------
+ 0. COME E' COSTRUITA OGNI CATENA
+--------------------------------------------------------------------------------
+
+Ogni comando ha sempre 6 blocchi, nello stesso ordine:
+
+ 1. PULIZIA    highpass + taglio del silenzio all'inizio e alla fine
+ 2. PITCH      asetrate=48000*P,aresample=48000,atempo=1/P
+               P<1 = piu' grave. Durata invariata.
+               Limite naturale: da 0.92 a 1.03.
+ 3. CORPO      equalizer sui bassi (100-250 Hz)  -> peso, eta', petto
+ 4. CARATTERE  equalizer sui medi (800-3500 Hz) -> nasale, roco, tagliente
+ 5. MORBIDEZZA equalizer sugli alti (6-8 kHz)   -> sibilanti, durezza
+ 6. DINAMICA   acompressor + loudnorm           -> presenza e volume
+
+Cosa rende diverse le voci:
+ - P (pitch)              = la "taglia" del personaggio
+ - frequenza del CARATTERE = il "timbro" (dove la voce colpisce)
+ - attack del compressore  = il "temperamento" (veloce = aggressivo)
+ - LRA del loudnorm        = la "teatralita'" (basso = costante, alto = espressivo)
+
+Taglio del silenzio finale (da usare in tutte le catene):
+ areverse,silenceremove=start_periods=1:start_silence=0.15:start_threshold=-50dB,areverse
+
+--------------------------------------------------------------------------------
+ 1. THOR - IL TONANTE
+--------------------------------------------------------------------------------
+ Carattere: enorme, stanco, roco, ironia amara. Parla dal petto.
+ Riferimento da registrare: voce grave, lenta, quasi biascicata, un po' "da
+ osteria". Pause lunghe tra le frasi.
+
+ A) La tua catena originale (versione di riferimento, gia' approvata):
+
+ffmpeg -y -i "C:\TTS\Audio\thor_gow_raw2.mp3" -ar 48000 -ac 1 -sample_fmt s16 -af "silenceremove=start_periods=1:start_silence=0.1:start_threshold=-50dB,asetrate=48000*0.94,aresample=48000,atempo=1/0.94,equalizer=f=120:t=q:w=0.9:g=3,equalizer=f=250:t=q:w=1.2:g=1.5,equalizer=f=3500:t=q:w=1.5:g=-2.5,equalizer=f=6500:t=q:w=2:g=-3,acompressor=threshold=-18dB:ratio=3:attack=15:release=120:makeup=2,loudnorm=I=-15:TP=-1.5" "C:\TTS\Audio\thor_gow_v3.wav"
+
+ B) v4 - stessa voce, solo tre ritocchi di pulizia:
+
+ffmpeg -y -i "C:\TTS\Audio\thor_gow_raw2.mp3" -ar 48000 -ac 1 -sample_fmt s16 -af "highpass=f=50,silenceremove=start_periods=1:start_silence=0.1:start_threshold=-50dB,areverse,silenceremove=start_periods=1:start_silence=0.15:start_threshold=-50dB,areverse,asetrate=48000*0.94,aresample=48000,atempo=1/0.94,equalizer=f=120:t=q:w=0.9:g=3,equalizer=f=250:t=q:w=1.2:g=1.5,equalizer=f=3500:t=q:w=1.5:g=-2.5,equalizer=f=6500:t=q:w=2:g=-3,acompressor=threshold=-18dB:ratio=3:attack=15:release=120:makeup=2,loudnorm=I=-15:TP=-1.5:LRA=11" "C:\TTS\Audio\thor_gow_v4.wav"
+
+ Differenze rispetto ad A:
+ - highpass=f=50: toglie rimbombi sotto la voce (non si sentono, ma
+   occupano volume e fanno "gonfiare" il compressore).
+ - taglio del silenzio finale: niente coda muta in Unreal.
+ - LRA=11 esplicito (prima era implicito): risultato identico, ma ripetibile.
+
+--------------------------------------------------------------------------------
+ 2. ODINO - IL PADRE DI TUTTI
+--------------------------------------------------------------------------------
+ Carattere: anziano, calmo, gentile in superficie, gelido sotto. Non alza
+ mai la voce: ti costringe ad avvicinarti. E' l'OPPOSTO di Thor: Thor occupa
+ la sala, Odino ti sussurra all'orecchio.
+ Riferimento: voce media-grave, lenta, quasi sussurrata, labbra vicine al
+ microfono (10-15 cm), consonanti morbide.
+
+ffmpeg -y -i "C:\TTS\out\odino.wav" -ar 48000 -ac 1 -sample_fmt s16 -af "highpass=f=70,silenceremove=start_periods=1:start_silence=0.1:start_threshold=-50dB,areverse,silenceremove=start_periods=1:start_silence=0.15:start_threshold=-50dB,areverse,asetrate=48000*0.96,aresample=48000,atempo=1/0.96,equalizer=f=180:t=q:w=1:g=1.5,equalizer=f=500:t=q:w=1.2:g=-2,equalizer=f=2500:t=q:w=1.2:g=2,equalizer=f=7000:t=q:w=2:g=-2.5,acompressor=threshold=-24dB:ratio=2.5:attack=8:release=160:makeup=3,loudnorm=I=-16:TP=-1.5:LRA=8" "C:\TTS\final\odino.wav"
+
+ Perche' suona da Odino:
+ - P=0.96: piu' grave del normale ma meno di Thor (e' vecchio, non enorme).
+ - 500 Hz -2: toglie la "pancia", la voce diventa piu' asciutta e anziana.
+ - 2500 Hz +2: porta avanti il fiato e i sussurri -> intimita'.
+ - threshold -24 + makeup 3: alza i dettagli piccoli (respiri, mezze parole).
+ - LRA 8: non esplode mai. La minaccia e' nel controllo.
+
+--------------------------------------------------------------------------------
+ 3. FREYA - LA REGINA DEI VANIR
+--------------------------------------------------------------------------------
+ Carattere: matura, calda, regale, ferita. Dolce che si fa tagliente quando
+ si arrabbia. Unica voce femminile del gruppo: deve essere la piu' "piena".
+ Riferimento: voce femminile medio-grave, parlata lenta, leggermente roca.
+
+ffmpeg -y -i "C:\TTS\out\freya.wav" -ar 48000 -ac 1 -sample_fmt s16 -af "highpass=f=90,silenceremove=start_periods=1:start_silence=0.1:start_threshold=-50dB,areverse,silenceremove=start_periods=1:start_silence=0.15:start_threshold=-50dB,areverse,asetrate=48000*0.98,aresample=48000,atempo=1/0.98,equalizer=f=220:t=q:w=1:g=2,equalizer=f=1200:t=q:w=1.2:g=-1,equalizer=f=3000:t=q:w=1.5:g=1,equalizer=f=7500:t=q:w=2:g=-2.5,acompressor=threshold=-20dB:ratio=2.5:attack=15:release=140:makeup=1.5,loudnorm=I=-16:TP=-1.5:LRA=12" "C:\TTS\final\freya.wav"
+
+ Perche' suona da Freya:
+ - P=0.98: appena piu' bassa -> matura, non ragazza. Oltre 0.97 diventa
+   maschile: non scendere.
+ - 220 Hz +2: calore del petto, autorita'.
+ - 1200 Hz -1: toglie la nasalita' -> eleganza.
+ - LRA 12: la piu' espressiva del gruppo, il dolore e la rabbia devono
+   emergere.
+
+--------------------------------------------------------------------------------
+ 4. MIMIR - IL PIU' SAGGIO
+--------------------------------------------------------------------------------
+ Carattere: una testa senza corpo, chiacchierona, ironica, affettuosa.
+ Voce chiara e vicina, l'unica senza pitch. Contrasto con gli dei: lui e'
+ "umano", diretto, simpatico.
+ Riferimento: voce maschile media, ritmo vivace, sorriso nella voce,
+ cadenza musicale (un accento regionale marcato e' perfetto).
+
+ffmpeg -y -i "C:\TTS\out\mimir.wav" -ar 48000 -ac 1 -sample_fmt s16 -af "highpass=f=100,silenceremove=start_periods=1:start_silence=0.1:start_threshold=-50dB,areverse,silenceremove=start_periods=1:start_silence=0.15:start_threshold=-50dB,areverse,equalizer=f=200:t=q:w=1:g=-2,equalizer=f=1800:t=q:w=1:g=2.5,equalizer=f=4500:t=q:w=1.5:g=1,equalizer=f=8000:t=q:w=2:g=-1.5,acompressor=threshold=-20dB:ratio=2:attack=6:release=90:makeup=1.5,loudnorm=I=-16:TP=-1.5:LRA=11" "C:\TTS\final\mimir.wav"
+
+ Perche' suona da Mimir:
+ - Nessun pitch: e' la voce piu' "naturale" e quindi la piu' vicina.
+ - 200 Hz -2: niente petto (non ha un corpo!). Effetto sottile ma giusto.
+ - 1800 Hz +2.5: chiarezza e parlantina, si capisce ogni parola.
+ - attack 6 / release 90: reattivo, segue il ritmo veloce.
+
+--------------------------------------------------------------------------------
+ 5. BROK - IL NANO FABBRO
+--------------------------------------------------------------------------------
+ Carattere: rude, sboccato, roco, irascibile ma generoso. Voce di gola,
+ nasale, "consumata" dal fumo della forgia.
+ Riferimento: voce maschile media, parlata veloce e brusca, di gola.
+ Esagera la recitazione: la catena non aggiunge rabbia, la mette in luce.
+
+ffmpeg -y -i "C:\TTS\out\brok.wav" -ar 48000 -ac 1 -sample_fmt s16 -af "highpass=f=90,silenceremove=start_periods=1:start_silence=0.1:start_threshold=-50dB,areverse,silenceremove=start_periods=1:start_silence=0.15:start_threshold=-50dB,areverse,asetrate=48000*0.98,aresample=48000,atempo=1/0.98,equalizer=f=150:t=q:w=1:g=-1,equalizer=f=900:t=q:w=1.2:g=3.5,equalizer=f=2200:t=q:w=1:g=1.5,equalizer=f=7000:t=q:w=2:g=-2.5,acompressor=threshold=-18dB:ratio=3.5:attack=4:release=80:makeup=2.5,loudnorm=I=-15.5:TP=-1.5:LRA=8" "C:\TTS\final\brok.wav"
+
+ Perche' suona da Brok:
+ - 900 Hz +3.5: il cuore del personaggio, voce nasale e "di naso rotto".
+ - 150 Hz -1: piccolo e compatto, non ha il petto di Thor.
+ - attack 4 / ratio 3.5: la voce piu' aggressiva, ogni parola e' una
+   martellata.
+ - LRA 8: urla anche quando parla piano.
+
+--------------------------------------------------------------------------------
+ 6. CONFRONTO: PERCHE' NON SI CONFONDONO
+--------------------------------------------------------------------------------
+
+ Voce     P     Dove colpisce     Attacco  LRA   LUFS    In una parola
+ -------  ----  ----------------  -------  ----  ------  -------------
+ Thor     0.94  120 Hz (petto)    15 ms    11    -15     MONTAGNA
+ Odino    0.96  2500 Hz (fiato)   8 ms     8     -16     SUSSURRO
+ Freya    0.98  220 Hz (calore)   15 ms    12    -16     REGINA
+ Mimir    1.00  1800 Hz (parola)  6 ms     11    -16     NARRATORE
+ Brok     0.98  900 Hz (naso)     4 ms     8     -15.5   MARTELLO
+
+ Ogni voce ha una frequenza "sua" diversa dalle altre: in una scena con
+ piu' personaggi non si coprono a vicenda.
+
+--------------------------------------------------------------------------------
+ 7. TUTTO IN UNA VOLTA (POWERSHELL)
+--------------------------------------------------------------------------------
+ I file in out\ devono iniziare con il nome del personaggio:
+ odino_saluto.wav, odino_idromele.wav, thor_risata.wav, ...
+
+$pre = "silenceremove=start_periods=1:start_silence=0.1:start_threshold=-50dB,areverse,silenceremove=start_periods=1:start_silence=0.15:start_threshold=-50dB,areverse"
+$v = @{
+ "thor"  = "highpass=f=50,$pre,asetrate=48000*0.94,aresample=48000,atempo=1/0.94,equalizer=f=120:t=q:w=0.9:g=3,equalizer=f=250:t=q:w=1.2:g=1.5,equalizer=f=3500:t=q:w=1.5:g=-2.5,equalizer=f=6500:t=q:w=2:g=-3,acompressor=threshold=-18dB:ratio=3:attack=15:release=120:makeup=2,loudnorm=I=-15:TP=-1.5:LRA=11"
+ "odino" = "highpass=f=70,$pre,asetrate=48000*0.96,aresample=48000,atempo=1/0.96,equalizer=f=180:t=q:w=1:g=1.5,equalizer=f=500:t=q:w=1.2:g=-2,equalizer=f=2500:t=q:w=1.2:g=2,equalizer=f=7000:t=q:w=2:g=-2.5,acompressor=threshold=-24dB:ratio=2.5:attack=8:release=160:makeup=3,loudnorm=I=-16:TP=-1.5:LRA=8"
+ "freya" = "highpass=f=90,$pre,asetrate=48000*0.98,aresample=48000,atempo=1/0.98,equalizer=f=220:t=q:w=1:g=2,equalizer=f=1200:t=q:w=1.2:g=-1,equalizer=f=3000:t=q:w=1.5:g=1,equalizer=f=7500:t=q:w=2:g=-2.5,acompressor=threshold=-20dB:ratio=2.5:attack=15:release=140:makeup=1.5,loudnorm=I=-16:TP=-1.5:LRA=12"
+ "mimir" = "highpass=f=100,$pre,equalizer=f=200:t=q:w=1:g=-2,equalizer=f=1800:t=q:w=1:g=2.5,equalizer=f=4500:t=q:w=1.5:g=1,equalizer=f=8000:t=q:w=2:g=-1.5,acompressor=threshold=-20dB:ratio=2:attack=6:release=90:makeup=1.5,loudnorm=I=-16:TP=-1.5:LRA=11"
+ "brok"  = "highpass=f=90,$pre,asetrate=48000*0.98,aresample=48000,atempo=1/0.98,equalizer=f=150:t=q:w=1:g=-1,equalizer=f=900:t=q:w=1.2:g=3.5,equalizer=f=2200:t=q:w=1:g=1.5,equalizer=f=7000:t=q:w=2:g=-2.5,acompressor=threshold=-18dB:ratio=3.5:attack=4:release=80:makeup=2.5,loudnorm=I=-15.5:TP=-1.5:LRA=8"
+}
+New-Item -ItemType Directory -Force C:\TTS\final | Out-Null
+Get-ChildItem C:\TTS\out\*.wav | ForEach-Object {
+ $who = ($_.BaseName -split "_")[0].ToLower()
+ if ($v.ContainsKey($who)) {
+  ffmpeg -y -hide_banner -loglevel error -i $_.FullName -ar 48000 -ac 1 -sample_fmt s16 -af $v[$who] "C:\TTS\final\$($_.Name)"
+  Write-Host "ok   $($_.Name)"
+ } else { Write-Host "SKIP $($_.Name)" }
+}
+
+--------------------------------------------------------------------------------
+ 8. RITOCCHI: COSA TOCCARE SE...
+--------------------------------------------------------------------------------
+
+ ...suona da "cartone animato"   -> P piu' vicino a 1.00 (passi di 0.01)
+ ...suona "in una scatola"       -> abbassa di 1 dB la banda 200-500 Hz
+ ...suona metallico              -> e' XTTS, non FFmpeg: accorcia la riga
+                                    in lines.csv o metti temperature=0.6
+ ...suona piatto, senza vita     -> alza LRA di 2 o abbassa la ratio di 0.5
+ ...le "s" fischiano             -> abbassa ancora 6.5-7.5 kHz (max -4 dB)
+ ...il personaggio si confonde   -> rinforza di +1 dB la SUA frequenza
+    con un altro                    (vedi tabella al punto 6)
+
+ Regola: cambia UN parametro alla volta e confronta:
+ ffplay -autoexit -nodisp "C:\TTS\final\odino.wav"
+
+--------------------------------------------------------------------------------
+ 9. IN UNREAL
+--------------------------------------------------------------------------------
+
+ Copia in: The_Skalds_Hall 5.6\Content\Audio\Voices\<Personaggio>\
+ Nessun riverbero nei file: lo spazio della sala lo da' l'Attenuation
+ del NPCDialogueComponent. Cosi' la voce suona "dentro" la sala, non
+ registrata altrove.
+
+================================================================================

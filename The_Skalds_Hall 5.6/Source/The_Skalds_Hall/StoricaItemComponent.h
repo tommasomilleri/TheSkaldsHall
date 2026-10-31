@@ -13,7 +13,7 @@ public:
 	UStoricaItemComponent();
 	UPROPERTY(EditAnywhere, Category = "Storica|Feedback")
 	USoundBase* ImpactSound;
-
+	UPROPERTY(EditAnywhere) TObjectPtr<USoundAttenuation> ImpactAttenuation;
 	UPROPERTY(EditAnywhere, Category = "Storica|Feedback")
 	UNiagaraSystem* ImpactVFX;
 

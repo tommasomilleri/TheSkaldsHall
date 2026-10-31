@@ -7,7 +7,7 @@
 AVisionMenuActor::AVisionMenuActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
+	PrimaryActorTick.bTickEvenWhenPaused = true;
 	USceneComponent* Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
 
@@ -23,7 +23,6 @@ AVisionMenuActor::AVisionMenuActor()
 	MenuWidget->SetWindowFocusable(true);
 	MenuWidget->SetBlendMode(EWidgetBlendMode::Transparent);
 	MenuWidget->SetBackgroundColor(FLinearColor::Transparent);
-	MenuWidget->SetBlendMode(EWidgetBlendMode::Transparent);
 	// Scala mondo: 520px -> ~52 cm di larghezza
 }
 

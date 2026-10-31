@@ -35,6 +35,8 @@ void UVRTeleportComponent::CancelAiming()
 {
 	Source = nullptr;
 	bHasValidDest = false;
+	static const TArray<FVector> Empty;
+	OnArcUpdated.Broadcast(Empty, FVector::ZeroVector, false);
 	SetComponentTickEnabled(false);
 }
 
@@ -108,9 +110,6 @@ void UVRTeleportComponent::ConfirmTeleport(float SnapYaw)
 	bTeleportInProgress = true;
 	SetComponentTickEnabled(false); // spegni la mira durante il blink
 
-	// "Blink" alla Alyx: fade a nero, teleport al buio, fade di ritorno.
-	// bHoldWhenFinished=true tiene lo schermo nero finché non facciamo
-	// il fade-in: il giocatore NON vede mai lo spostamento.
 	Cam->StartCameraFade(0.f, 1.f, FadeOutTime, FLinearColor::Black,
 		/*bShouldFadeAudio=*/false, /*bHoldWhenFinished=*/true);
 
@@ -138,6 +137,7 @@ void UVRTeleportComponent::DoTeleport(float SnapYaw)
 		FRotator NewRot = Pawn->GetActorRotation();
 		NewRot.Yaw += SnapYaw;
 		Pawn->TeleportTo(ValidDestination, NewRot);
+		OnTeleported.Broadcast(ValidDestination);
 	}
 	CancelAiming();
 }

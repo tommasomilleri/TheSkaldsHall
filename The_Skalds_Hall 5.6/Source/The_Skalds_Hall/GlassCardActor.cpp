@@ -19,6 +19,7 @@ AGlassCardActor::AGlassCardActor()
 	CardWidget->SetDrawSize(FVector2D(1000.f, 340.f));    // risoluzione in pixel
 	CardWidget->SetTwoSided(true);                       // visibile da dietro
 	CardWidget->SetBlendMode(EWidgetBlendMode::Transparent); // serve per la trasparenza!
+	CardWidget->SetRelativeScale3D(FVector(0.05f));
 	CardWidget->SetWorldScale3D(FVector(0.05f));          // 500px -> ~50cm reali
 	CardWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GlassPanel = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GlassPanel"));
@@ -47,6 +48,7 @@ void AGlassCardActor::BeginPlay()
 	CurrentScale = TargetScale = bStartClosed ? 0.f : 1.f;
 	Root->SetRelativeScale3D(FVector(FMath::Max(CurrentScale, 0.001f)));
 	if (bStartClosed) { SetActorHiddenInGame(true); }
+	SetActorTickEnabled(!bStartClosed && (FloatAmplitude > 0.f || bFacePlayer));
 }
 
 void AGlassCardActor::Open()
@@ -59,6 +61,8 @@ void AGlassCardActor::Open()
 void AGlassCardActor::Close()
 {
 	TargetScale = 0.f;  // il Tick anima verso 0 e poi nasconde
+	SetActorTickEnabled(true);   // la chiusura è animata nel Tick
+	TargetScale = 0.f;
 }
 
 bool AGlassCardActor::IsHeld() const

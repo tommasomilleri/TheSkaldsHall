@@ -33,6 +33,11 @@ void UStoricaItemComponent::BeginPlay()
 void UStoricaItemComponent::OnItemHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	const float Mass = HitComp ? FMath::Max(HitComp->GetMass(), 0.01f) : 1.f;
+	const float DeltaV = NormalImpulse.Size() / Mass;   // cm/s
+	// Confronta DeltaV con MinImpulse/MaxImpulse (es. 60 / 400) e chiama:
+	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, Hit.ImpactPoint,
+		Volume, 1.f, 0.f, ImpactAttenuation);
 	const float Impulse = NormalImpulse.Size();
 	if (Impulse < MinImpulse)
 	{

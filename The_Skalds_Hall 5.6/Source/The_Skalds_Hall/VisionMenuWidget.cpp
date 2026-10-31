@@ -117,7 +117,10 @@ TSharedRef<SWidget> UVisionMenuWidget::RebuildWidget()
 void UVisionMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-
+	if (VolumeValueText) VolumeValueText->SetText(FText::FromString(
+		FString::Printf(TEXT("%d%%"), FMath::RoundToInt(S->GetMasterVolume() * 100.f))));
+	if (HeightValueText) HeightValueText->SetText(FText::FromString(
+		FString::Printf(TEXT("%d cm"), FMath::RoundToInt(S->GetHeightOffset()))));
 	if (VolumeSlider && !VolumeSlider->OnValueChanged.IsAlreadyBound(this,&UVisionMenuWidget::HandleVolumeChanged))
 	{
 		VolumeSlider->OnValueChanged.AddDynamic(this, &UVisionMenuWidget::HandleVolumeChanged);

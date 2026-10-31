@@ -18,8 +18,9 @@ struct FDialogueLine
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USoundBase> Sound;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<UObject> LipSyncSequence;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (MultiLine = true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (AllowedClasses = "/Script/OVRLipSync.OVRLipSyncFrameSequence"))
+	TObjectPtr<UObject> LipSyncSequence;	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (MultiLine = true))
 	FText Subtitle;
 
 	/** Gesto facoltativo mentre parla. */

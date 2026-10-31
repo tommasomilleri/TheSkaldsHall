@@ -3,7 +3,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Misc/App.h"
-
+#include "AudioDevice.h"
+#include "Engine/Engine.h"
 static const FString SettingsSlot = TEXT("VRSettings");
 
 void UVRSettingsSubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -72,7 +73,9 @@ void UVRSettingsSubsystem::LoadSettings()
 
 void UVRSettingsSubsystem::ApplyVolume() const
 {
-	FApp::SetVolumeMultiplier(MasterVolume);
+	if (!GEngine) return;
+	FAudioDeviceHandle H = GEngine->GetMainAudioDevice();
+	if (H.IsValid()) { H->SetTransientPrimaryVolume(MasterVolume); }
 }
 
 void UVRSettingsSubsystem::NotifyChanged()

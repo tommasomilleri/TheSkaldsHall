@@ -82,7 +82,16 @@ void UVRTeleportComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		}
 	}
 
-	// 3) Visual placeholder (sostituibile con Niagara ribbon + decal)
+	// 3) Broadcast per Niagara + DrawDebug in editor
+	TArray<FVector> Pts;
+	Pts.Reserve(Result.PathData.Num());
+	for (const FPredictProjectilePathPointData& P : Result.PathData)
+	{
+		Pts.Add(P.Location);
+	}
+	OnArcUpdated.Broadcast(Pts, ValidDestination, bHasValidDest);
+
+#if ENABLE_DRAW_DEBUG
 	const FColor Col = bHasValidDest ? FColor::Cyan : FColor::Red;
 	for (int32 i = 1; i < Result.PathData.Num(); ++i)
 	{
@@ -94,6 +103,7 @@ void UVRTeleportComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		DrawDebugCylinder(World, ValidDestination,
 			ValidDestination + FVector(0, 0, 2.f), 35.f, 24, Col, false, -1.f);
 	}
+#endif
 }
 
 void UVRTeleportComponent::ConfirmTeleport(float SnapYaw)

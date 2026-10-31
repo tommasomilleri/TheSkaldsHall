@@ -23,7 +23,6 @@ void USignificanceManagerComponent::BeginPlay()
 	}
 }
 
-// In TickComponent: sostituisci "if (!SkelMesh) return;" con:
 if (SkelMeshes.Num() == 0) return;
 if (bRespectDialogue && Dialogue && Dialogue->IsSpeaking()) return;
 

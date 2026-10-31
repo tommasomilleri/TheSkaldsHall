@@ -1,4 +1,3 @@
-
 #include "VisionMenuActor.h"
 #include "VisionMenuWidget.h"
 #include "Components/WidgetComponent.h"
@@ -85,7 +84,7 @@ FVector AVisionMenuActor::ComputeTargetLocation() const
 {
 	FVector ViewLoc;
 	FRotator ViewRot;
-	if (!const_cast<AVisionMenuActor*>(this)->GetPlayerView(ViewLoc, ViewRot))
+	if (!GetPlayerView(ViewLoc, ViewRot))
 	{
 		return GetActorLocation();
 	}

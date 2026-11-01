@@ -117,25 +117,22 @@ TSharedRef<SWidget> UVisionMenuWidget::RebuildWidget()
 void UVisionMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	if (VolumeValueText) VolumeValueText->SetText(FText::FromString(
-		FString::Printf(TEXT("%d%%"), FMath::RoundToInt(S->GetMasterVolume() * 100.f))));
-	if (HeightValueText) HeightValueText->SetText(FText::FromString(
-		FString::Printf(TEXT("%d cm"), FMath::RoundToInt(S->GetHeightOffset()))));
-	if (VolumeSlider && !VolumeSlider->OnValueChanged.IsAlreadyBound(this,&UVisionMenuWidget::HandleVolumeChanged))
+
+	if (VolumeSlider)
 	{
-		VolumeSlider->OnValueChanged.AddDynamic(this, &UVisionMenuWidget::HandleVolumeChanged);
+		VolumeSlider->OnValueChanged.AddUniqueDynamic(this, &UVisionMenuWidget::HandleVolumeChanged);
 	}
 	if (HeightSlider)
 	{
-		HeightSlider->OnValueChanged.AddDynamic(this, &UVisionMenuWidget::HandleHeightChanged);
+		HeightSlider->OnValueChanged.AddUniqueDynamic(this, &UVisionMenuWidget::HandleHeightChanged);
 	}
 	if (SeatedCheck)
 	{
-		SeatedCheck->OnCheckStateChanged.AddDynamic(this, &UVisionMenuWidget::HandleSeatedChanged);
+		SeatedCheck->OnCheckStateChanged.AddUniqueDynamic(this, &UVisionMenuWidget::HandleSeatedChanged);
 	}
 	if (RecenterButton)
 	{
-		RecenterButton->OnClicked.AddDynamic(this, &UVisionMenuWidget::HandleRecenterClicked);
+		RecenterButton->OnClicked.AddUniqueDynamic(this, &UVisionMenuWidget::HandleRecenterClicked);
 	}
 
 	if (UVRSettingsSubsystem* S = GetSettings())
@@ -143,8 +140,17 @@ void UVisionMenuWidget::NativeConstruct()
 		if (VolumeSlider) { VolumeSlider->SetValue(S->GetMasterVolume()); }
 		if (HeightSlider) { HeightSlider->SetValue(S->GetHeightOffset()); }
 		if (SeatedCheck) { SeatedCheck->SetIsChecked(S->IsSeatedMode()); }
-		HandleVolumeChanged(S->GetMasterVolume());
-		HandleHeightChanged(S->GetHeightOffset());
+
+		if (VolumeValueText)
+		{
+			VolumeValueText->SetText(FText::FromString(
+				FString::Printf(TEXT("%d%%"), FMath::RoundToInt(S->GetMasterVolume() * 100.f))));
+		}
+		if (HeightValueText)
+		{
+			HeightValueText->SetText(FText::FromString(
+				FString::Printf(TEXT("%d cm"), FMath::RoundToInt(S->GetHeightOffset()))));
+		}
 	}
 }
 
@@ -217,7 +223,6 @@ UBorder* UVisionMenuWidget::MakeGlassPanel()
 
 UWidget* UVisionMenuWidget::MakeRow(const FString& Label, UWidget* Control)
 {
-	// Mantenuta per compatibilita', delega a MakeCard.
 	return MakeCard(Label, Control, nullptr);
 }
 
@@ -225,7 +230,6 @@ UWidget* UVisionMenuWidget::MakeCard(const FString& Label, UWidget* Control, UTe
 {
 	using namespace VisionStyle;
 
-	// Card arrotondata (stile riga visionOS)
 	UBorder* Card = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
 	FSlateBrush CardBrush;
 	CardBrush.DrawAs = ESlateBrushDrawType::RoundedBox;
@@ -243,13 +247,11 @@ UWidget* UVisionMenuWidget::MakeCard(const FString& Label, UWidget* Control, UTe
 		CSlotPad->SetPadding(FMargin(20.f, 16.f));
 	}
 
-	// Etichetta
 	UTextBlock* LabelText = MakeText(Label, 17.f, TextPrimary);
 	UHorizontalBoxSlot* LSlot = Row->AddChildToHorizontalBox(LabelText);
 	LSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
 	LSlot->SetVerticalAlignment(VAlign_Center);
 
-	// Valore (opzionale, a destra prima del controllo)
 	if (ValueText)
 	{
 		UHorizontalBoxSlot* VSlot = Row->AddChildToHorizontalBox(ValueText);
@@ -257,14 +259,12 @@ UWidget* UVisionMenuWidget::MakeCard(const FString& Label, UWidget* Control, UTe
 		VSlot->SetPadding(FMargin(0.f, 0.f, 14.f, 0.f));
 	}
 
-	// Controllo a larghezza fissa
 	USizeBox* ControlBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
 	ControlBox->SetWidthOverride(230.f);
 	ControlBox->AddChild(Control);
 	UHorizontalBoxSlot* CSlot = Row->AddChildToHorizontalBox(ControlBox);
 	CSlot->SetVerticalAlignment(VAlign_Center);
 
-	// Wrapper per lo spacing verticale tra card
 	UVerticalBox* Wrapper = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
 	UVerticalBoxSlot* WSlot = Wrapper->AddChildToVerticalBox(Card);
 	WSlot->SetPadding(FMargin(0.f, 0.f, 0.f, 12.f));
@@ -284,7 +284,6 @@ USlider* UVisionMenuWidget::MakeVisionSlider(float MinVal, float MaxVal)
 	FSliderStyle Style = S->GetWidgetStyle();
 	Style.SetBarThickness(6.f);
 
-	// Handle circolare bianco con leggera ombra
 	FSlateBrush Thumb;
 	Thumb.DrawAs = ESlateBrushDrawType::RoundedBox;
 	Thumb.TintColor = Accent;

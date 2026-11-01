@@ -7,7 +7,13 @@
 class USkeletalMeshComponent;
 class ULODSyncComponent;
 class UNPCDialogueComponent;
+class UNPCRoutineComponent;
 
+/**
+ * Riduce costo di animazione/LOD degli NPC lontani o fuori vista.
+ * Agisce su TUTTE le skeletal mesh dell'owner (Body, Face, Tunica...).
+ * Se c'è un LODSync (MetaHuman) forza il LOD lì, altrimenti sulle mesh.
+ */
 UCLASS(ClassGroup = (VR), meta = (BlueprintSpawnableComponent))
 class THE_SKALDS_HALL_API USignificanceManagerComponent : public UActorComponent
 {
@@ -19,6 +25,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Significance", meta = (ClampMin = "100.0"))
 	float MaxSignificantDistance = 1200.f;
 
+	/** LOD (0-based) usato quando l'NPC non è significativo. */
 	UPROPERTY(EditAnywhere, Category = "Significance", meta = (ClampMin = "0"))
 	int32 InsignificantLOD = 3;
 
@@ -44,6 +51,9 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UNPCDialogueComponent> Dialogue;
+
+	UPROPERTY()
+	TObjectPtr<UNPCRoutineComponent> Routine;
 
 	bool bWasSignificant = true;
 	void ApplySignificance(bool bSignificant);

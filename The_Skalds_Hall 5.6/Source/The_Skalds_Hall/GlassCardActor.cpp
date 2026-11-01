@@ -1,9 +1,12 @@
 #include "GlassCardActor.h"
 #include "SGlassCardWidget.h"
 #include "Components/WidgetComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Engine/StaticMesh.h"
+#include "Materials/MaterialInterface.h"
+#include "Camera/PlayerCameraManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "MotionControllerComponent.h"
-#include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
 AGlassCardActor::AGlassCardActor()
@@ -19,7 +22,7 @@ AGlassCardActor::AGlassCardActor()
 	CardWidget->SetDrawSize(FVector2D(1000.f, 340.f));
 	CardWidget->SetTwoSided(true);
 	CardWidget->SetBlendMode(EWidgetBlendMode::Transparent);
-	CardWidget->SetRelativeScale3D(FVector(0.05f)); // 1000px * 0.05 = 50cm reali
+	CardWidget->SetRelativeScale3D(FVector(0.05f));
 	CardWidget->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	GlassPanel = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GlassPanel"));
@@ -67,7 +70,7 @@ void AGlassCardActor::Open()
 
 void AGlassCardActor::Close()
 {
-	SetActorTickEnabled(true); // la chiusura e' animata nel Tick
+	SetActorTickEnabled(true);
 	TargetScale = 0.f;
 }
 
@@ -87,7 +90,6 @@ void AGlassCardActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// 1) Animazione apertura/chiusura
 	CurrentScale = FMath::FInterpTo(CurrentScale, TargetScale, DeltaTime, 10.f);
 	Root->SetRelativeScale3D(FVector(FMath::Max(CurrentScale, 0.001f)));
 	if (TargetScale <= 0.f && CurrentScale < 0.01f)
@@ -96,7 +98,6 @@ void AGlassCardActor::Tick(float DeltaTime)
 		SetActorTickEnabled(false);
 	}
 
-	// 2) Se il player la tiene in mano, niente fluttuazione/rotazione
 	const bool bHeldNow = IsHeld();
 	if (bHeldNow)
 	{
@@ -110,7 +111,6 @@ void AGlassCardActor::Tick(float DeltaTime)
 		FloatTime = 0.f;
 	}
 
-	// 3) Fluttuazione: seno sulla Z
 	if (FloatAmplitude > 0.f)
 	{
 		FloatTime += DeltaTime * FloatSpeed;
@@ -119,11 +119,9 @@ void AGlassCardActor::Tick(float DeltaTime)
 		SetActorLocation(Loc);
 	}
 
-	// 4) Ruota dolcemente verso la camera del player (solo yaw)
 	if (bFacePlayer)
 	{
-		if (const APlayerCameraManager* Cam =
-			UGameplayStatics::GetPlayerCameraManager(this, 0))
+		if (const APlayerCameraManager* Cam = UGameplayStatics::GetPlayerCameraManager(this, 0))
 		{
 			FRotator Look = (Cam->GetCameraLocation() - GetActorLocation()).Rotation();
 			Look.Pitch = 0.f;

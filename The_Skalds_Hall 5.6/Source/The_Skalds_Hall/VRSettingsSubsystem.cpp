@@ -1,10 +1,12 @@
-
 #include "VRSettingsSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Misc/App.h"
 #include "AudioDevice.h"
 #include "Engine/Engine.h"
+#include "Engine/World.h"
+#include "TimerManager.h"
+
 static const FString SettingsSlot = TEXT("VRSettings");
 
 void UVRSettingsSubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -75,7 +77,10 @@ void UVRSettingsSubsystem::ApplyVolume() const
 {
 	if (!GEngine) return;
 	FAudioDeviceHandle H = GEngine->GetMainAudioDevice();
-	if (H.IsValid()) { H->SetTransientPrimaryVolume(MasterVolume); }
+	if (H.IsValid())
+	{
+		H->SetTransientPrimaryVolume(MasterVolume);
+	}
 }
 
 void UVRSettingsSubsystem::NotifyChanged()
@@ -83,7 +88,6 @@ void UVRSettingsSubsystem::NotifyChanged()
 	OnSettingsChanged.Broadcast();
 	if (UWorld* World = GetWorld())
 	{
-		// FIX: Rimossa la parentesi tonda errata dopo SaveDebounceTimer
 		World->GetTimerManager().SetTimer(SaveDebounceTimer, this,
 			&UVRSettingsSubsystem::SaveSettings, 1.0f, false);
 	}
@@ -92,4 +96,3 @@ void UVRSettingsSubsystem::NotifyChanged()
 		SaveSettings();
 	}
 }
-

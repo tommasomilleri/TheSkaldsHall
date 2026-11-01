@@ -4,10 +4,12 @@
 #include "Components/ActorComponent.h"
 #include "AITypes.h"
 #include "Navigation/PathFollowingComponent.h"
+#include "Engine/TimerHandle.h"
 #include "NPCRoutineComponent.generated.h"
 
 class UAnimMontage;
 class UNPCDialogueComponent;
+class UAnimInstance;
 
 UENUM(BlueprintType)
 enum class ERoutineStepType : uint8
@@ -57,9 +59,7 @@ struct FRoutineStep
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSeatedChanged, bool, bSeated);
 
 /**
- * Routine ciclica di step. Pause casuali, interruzione per salutare il player
- * (collega NPCGazeGreeter.OnGreet -> InterruptForGreeting), pausa esterna via
- * SetPaused (rifiutata mentre parla o saluta). Tutto a eventi/timer: 0 tick.
+ * Routine ciclica di step. Tutto a eventi/timer: 0 tick.
  */
 UCLASS(ClassGroup = (NPC), meta = (BlueprintSpawnableComponent))
 class THE_SKALDS_HALL_API UNPCRoutineComponent : public UActorComponent
@@ -112,16 +112,17 @@ private:
 	bool bPaused = false;
 	bool bGreeting = false;
 	FTimerHandle StepTimer;
-	FTransform StartTransform; // i TargetPoint sono relativi a QUESTA
+	FTransform StartTransform;
 
-	UPROPERTY(Transient) TObjectPtr<UNPCDialogueComponent> Dialogue;
+	UPROPERTY(Transient)
+	TObjectPtr<UNPCDialogueComponent> Dialogue;
 
 	void RunStep();
 	void NextStep();
 	void ScheduleNext(const FRoutineStep& S);
 	void ScheduleNextDelay(float Delay);
 	void StopCurrentMovement();
-	class UAnimInstance* GetAnim() const;
+	UAnimInstance* GetAnim() const;
 
 	UFUNCTION() void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	UFUNCTION() void OnGreetMontageEnded(UAnimMontage* Montage, bool bInterrupted);

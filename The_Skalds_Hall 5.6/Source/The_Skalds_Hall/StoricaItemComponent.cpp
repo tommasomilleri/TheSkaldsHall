@@ -1,9 +1,11 @@
 #include "StoricaItemComponent.h"
 #include "Components/PrimitiveComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Sound/SoundBase.h"
 #include "Sound/SoundAttenuation.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
+#include "Engine/World.h"
 
 UStoricaItemComponent::UStoricaItemComponent()
 {
@@ -14,17 +16,10 @@ void UStoricaItemComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	AActor* Owner = GetOwner();
-	if (!Owner)
-	{
-		return;
-	}
+	if (!Owner) return;
 
-	// Trova la prima primitive component dell'owner (di solito la StaticMesh radice)
 	UPrimitiveComponent* Prim = Owner->FindComponentByClass<UPrimitiveComponent>();
-	if (!Prim)
-	{
-		return;
-	}
+	if (!Prim) return;
 
 	if (bEnablePhysics)
 	{
@@ -37,18 +32,14 @@ void UStoricaItemComponent::BeginPlay()
 void UStoricaItemComponent::OnItemHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	if (!GetWorld()) return;
+
 	const float Mass = HitComp ? FMath::Max(HitComp->GetMass(), 0.01f) : 1.f;
-	const float DeltaV = NormalImpulse.Size() / Mass; // cm/s
-	if (DeltaV < MinImpulse)
-	{
-		return;
-	}
+	const float DeltaV = NormalImpulse.Size() / Mass;
+	if (DeltaV < MinImpulse) return;
 
 	const float Now = GetWorld()->GetTimeSeconds();
-	if (Now - LastImpactTime < ImpactCooldown)
-	{
-		return;
-	}
+	if (Now - LastImpactTime < ImpactCooldown) return;
 	LastImpactTime = Now;
 
 	const float Volume = FMath::GetMappedRangeValueClamped(

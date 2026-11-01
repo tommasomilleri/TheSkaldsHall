@@ -1,22 +1,21 @@
-// ----- FILE: Source/The_Skalds_Hall/NPCDialogueComponent.cpp -----
 #include "NPCDialogueComponent.h"
 #include "Components/AudioComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Sound/SoundBase.h"
 #include "Sound/SoundAttenuation.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
+#include "Engine/World.h"
 #include "TimerManager.h"
 
 UNPCDialogueComponent::UNPCDialogueComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false; // event-driven: zero costo a riposo
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 void UNPCDialogueComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	// Il MetaHuman assembla Body/Face DOPO il BeginPlay dei componenti:
-	// rimandiamo l'init al prossimo tick (fix warning "no attach parent" in packaged).
 	if (UWorld* World = GetWorld())
 	{
 		World->GetTimerManager().SetTimerForNextTick(this, &UNPCDialogueComponent::InitVoice);
@@ -32,15 +31,21 @@ void UNPCDialogueComponent::InitVoice()
 	Owner->GetComponents<USkeletalMeshComponent>(Meshes);
 	for (USkeletalMeshComponent* M : Meshes)
 	{
-		if (M && M->DoesSocketExist(HeadSocket)) { BodyMesh = M; break; }
+		if (M && M->DoesSocketExist(HeadSocket))
+		{
+			BodyMesh = M;
+			break;
+		}
 	}
-	if (!BodyMesh && Meshes.Num() > 0) BodyMesh = Meshes[0];
+	if (!BodyMesh && Meshes.Num() > 0)
+	{
+		BodyMesh = Meshes[0];
+	}
 
 	VoiceAudio = NewObject<UAudioComponent>(Owner, TEXT("VoiceAudio"));
 	VoiceAudio->bAutoActivate = false;
 	VoiceAudio->bAllowSpatialization = true;
 	VoiceAudio->AttenuationSettings = Attenuation;
-	// A runtime: PRIMA Register, POI Attach (SetupAttachment è da costruttore)
 	VoiceAudio->RegisterComponent();
 	VoiceAudio->AttachToComponent(
 		BodyMesh ? static_cast<USceneComponent*>(BodyMesh) : Owner->GetRootComponent(),
@@ -78,8 +83,12 @@ bool UNPCDialogueComponent::Say(FName LineKey)
 	VoiceAudio->Play();
 
 	if (Line->GestureMontage && BodyMesh)
+	{
 		if (UAnimInstance* Anim = BodyMesh->GetAnimInstance())
+		{
 			Anim->Montage_Play(Line->GestureMontage, 1.f);
+		}
+	}
 
 	BP_StartLipSync(VoiceAudio, Line->Sound, Line->LipSyncSequence);
 	OnLineStarted.Broadcast(*Line);
@@ -90,18 +99,22 @@ void UNPCDialogueComponent::Stop()
 {
 	if (!bSpeaking) return;
 	bSpeaking = false;
-	if (VoiceAudio) VoiceAudio->Stop();
+	if (VoiceAudio)
+	{
+		VoiceAudio->Stop();
+	}
 	BP_StopLipSync();
 	OnLineFinished.Broadcast();
 }
 
 void UNPCDialogueComponent::HandleAudioFinished()
 {
-	if (!bSpeaking) return; // Stop() ha già fatto il broadcast
+	if (!bSpeaking) return;
 	bSpeaking = false;
 	BP_StopLipSync();
 	OnLineFinished.Broadcast();
 }
+
 void UNPCDialogueComponent::CalculateMetaHumanLipCurves(
 	const TArray<float>& V,
 	float DeltaTime,
@@ -117,7 +130,6 @@ void UNPCDialogueComponent::CalculateMetaHumanLipCurves(
 	float& MouthUpperUpR,
 	float InterpSpeed)
 {
-	// Se l'array non ha i 15 visemi di OVR (o non sta parlando), riporta dolcemente la bocca a 0
 	if (V.Num() < 15)
 	{
 		JawOpen = FMath::FInterpTo(JawOpen, 0.f, DeltaTime, InterpSpeed);
@@ -133,7 +145,6 @@ void UNPCDialogueComponent::CalculateMetaHumanLipCurves(
 		return;
 	}
 
-	// Indici OVR: 1=PP, 2=FF, 3=TH, 4=DD, 5=kk, 6=CH, 7=SS, 8=nn, 9=RR, 10=aa, 11=E, 12=ih, 13=oh, 14=ou
 	const float TargetJawOpen = FMath::Clamp(V[10] * 0.7f + V[13] * 0.5f + V[11] * 0.4f + V[5] * 0.3f + V[12] * 0.25f + V[14] * 0.2f + V[4] * 0.2f, 0.f, 1.f);
 	const float TargetMouthClose = FMath::Clamp(V[1] * 1.0f, 0.f, 1.f);
 	const float TargetMouthFunnel = FMath::Clamp(V[14] * 0.5f + V[6] * 0.6f + V[13] * 0.7f + V[2] * 0.4f, 0.f, 1.f);

@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -11,11 +10,10 @@ class UCheckBox;
 class UButton;
 class UTextBlock;
 class UBorder;
+class UVRSettingsSubsystem;
 
 /**
- * Menu impostazioni VR in stile visionOS: pannello vetro scuro,
- * angoli arrotondati, righe con slider/toggle/bottoni.
- * Interamente costruito in C++ (WidgetTree), nessun asset UMG richiesto.
+ * Menu impostazioni VR in stile visionOS.
  */
 UCLASS()
 class THE_SKALDS_HALL_API UVisionMenuWidget : public UUserWidget
@@ -27,21 +25,31 @@ protected:
 	virtual void NativeConstruct() override;
 
 private:
-	UPROPERTY() USlider* VolumeSlider = nullptr;
-	UPROPERTY() UTextBlock* VolumeValueText = nullptr;
-	UPROPERTY() USlider* HeightSlider = nullptr;
-	UPROPERTY() UTextBlock* HeightValueText = nullptr;
-	UPROPERTY() UCheckBox* SeatedCheck = nullptr;
-	UPROPERTY() UButton* RecenterButton = nullptr;
+	UPROPERTY()
+	TObjectPtr<USlider> VolumeSlider = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UTextBlock> VolumeValueText = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<USlider> HeightSlider = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UTextBlock> HeightValueText = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UCheckBox> SeatedCheck = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UButton> RecenterButton = nullptr;
 
 	UFUNCTION() void HandleVolumeChanged(float Value);
 	UFUNCTION() void HandleHeightChanged(float Value);
 	UFUNCTION() void HandleSeatedChanged(bool bChecked);
 	UFUNCTION() void HandleRecenterClicked();
 
-	class UVRSettingsSubsystem* GetSettings() const;
+	UVRSettingsSubsystem* GetSettings() const;
 
-	// Helper di costruzione UI
 	UBorder* MakeGlassPanel();
 	UWidget* MakeRow(const FString& Label, UWidget* Control);
 	UWidget* MakeCard(const FString& Label, UWidget* Control, UTextBlock* ValueText);

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Engine/TimerHandle.h"
 #include "VRTeleportComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnTeleportArcUpdated,
@@ -26,8 +27,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "VR|Teleport")
 	void StartAiming(USceneComponent* AimSource);
 
-	/** Conferma: blink + teleport. SnapYaw = rotazione snap pre-teleport
-	 *  (es. direzione del thumbstick al rilascio). */
+	/** Conferma: blink + teleport. */
 	UFUNCTION(BlueprintCallable, Category = "VR|Teleport")
 	void ConfirmTeleport(float SnapYaw = 0.f);
 
@@ -38,11 +38,11 @@ public:
 	UFUNCTION(BlueprintPure, Category = "VR|Teleport")
 	bool HasValidDestination() const { return bHasValidDest; }
 
-	/** Velocità iniziale dell'arco (cm/s). Più alta = arco più lungo. */
+	/** Velocita' iniziale dell'arco (cm/s). */
 	UPROPERTY(EditAnywhere, Category = "VR|Teleport", meta = (ClampMin = "100.0"))
 	float LaunchSpeed = 900.f;
 
-	/** Durata fade a nero (blink out). Alyx usa ~0.1s. */
+	/** Durata fade a nero (blink out). */
 	UPROPERTY(EditAnywhere, Category = "VR|Teleport", meta = (ClampMin = "0.01"))
 	float FadeOutTime = 0.1f;
 

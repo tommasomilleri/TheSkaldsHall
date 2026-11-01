@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -9,8 +8,6 @@ class UWidgetComponent;
 
 /**
  * Pannello menu fluttuante stile visionOS.
- * Chiamare ToggleMenu() dal VRPawn (input bottone Menu del controller):
- * appare davanti al giocatore, lo segue dolcemente e resta rivolto verso di lui.
  */
 UCLASS()
 class THE_SKALDS_HALL_API AVisionMenuActor : public AActor
@@ -21,7 +18,7 @@ public:
 	AVisionMenuActor();
 
 	UPROPERTY(VisibleAnywhere, Category = "Menu")
-	UWidgetComponent* MenuWidget;
+	TObjectPtr<UWidgetComponent> MenuWidget;
 
 	/** Distanza dal visore in cm. */
 	UPROPERTY(EditAnywhere, Category = "Menu")
@@ -47,4 +44,3 @@ private:
 	bool GetPlayerView(FVector& OutLocation, FRotator& OutRotation) const;
 	FVector ComputeTargetLocation() const;
 };
-

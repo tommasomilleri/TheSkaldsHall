@@ -9,8 +9,7 @@ class UStaticMeshComponent;
 class UMaterialInterface;
 
 /**
- * Scheda "fisica" nel mondo: fluttua, guarda il player,
- * si apre/chiude con animazione di scala.
+ * Scheda fisica nel mondo: fluttua, guarda il player, si apre/chiude con animazione di scala.
  */
 UCLASS()
 class THE_SKALDS_HALL_API AGlassCardActor : public AActor

@@ -13,26 +13,25 @@
 #include "Components/TextBlock.h"
 #include "Components/BorderSlot.h"
 #include "Components/SizeBox.h"
+#include "Engine/GameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
 namespace VisionStyle
 {
-	// Palette visionOS
-	const FLinearColor PanelBg(0.01f, 0.01f, 0.015f, 0.35f);      // vetro scuro caldo
-	const FLinearColor PanelEdge(1.f, 1.f, 1.f, 0.22f);           // bordo luminoso
-	const FLinearColor CardBg(1.f, 1.f, 1.f, 0.05f);              // card riga
+	const FLinearColor PanelBg(0.01f, 0.01f, 0.015f, 0.35f);
+	const FLinearColor PanelEdge(1.f, 1.f, 1.f, 0.22f);
+	const FLinearColor CardBg(1.f, 1.f, 1.f, 0.05f);
 	const FLinearColor CardEdge(1.f, 1.f, 1.f, 0.10f);
 	const FLinearColor TextPrimary(1.f, 1.f, 1.f, 0.96f);
 	const FLinearColor TextSecondary(1.f, 1.f, 1.f, 0.55f);
 	const FLinearColor SliderTrack(1.f, 1.f, 1.f, 0.22f);
-	const FLinearColor Accent(1.f, 1.f, 1.f, 1.f);                 // handle/CTA bianchi
+	const FLinearColor Accent(1.f, 1.f, 1.f, 1.f);
 }
 
 TSharedRef<SWidget> UVisionMenuWidget::RebuildWidget()
 {
 	using namespace VisionStyle;
 
-	// ---------- Pannello vetro radice ----------
 	UBorder* Root = MakeGlassPanel();
 	WidgetTree->RootWidget = Root;
 
@@ -43,7 +42,6 @@ TSharedRef<SWidget> UVisionMenuWidget::RebuildWidget()
 		BSlot->SetPadding(FMargin(34.f, 30.f));
 	}
 
-	// ---------- Header ----------
 	UTextBlock* Title = MakeText(TEXT("Impostazioni"), 30.f, TextPrimary);
 	{
 		FSlateFontInfo F = Title->GetFont();
@@ -57,22 +55,18 @@ TSharedRef<SWidget> UVisionMenuWidget::RebuildWidget()
 	UVerticalBoxSlot* SubSlot = Column->AddChildToVerticalBox(Subtitle);
 	SubSlot->SetPadding(FMargin(6.f, 0.f, 0.f, 22.f));
 
-	// ---------- Card: Volume ----------
 	VolumeSlider = MakeVisionSlider(0.f, 1.f);
 	VolumeValueText = MakeText(TEXT("100%"), 15.f, TextSecondary);
 	Column->AddChildToVerticalBox(MakeCard(TEXT("Volume"), VolumeSlider, VolumeValueText));
 
-	// ---------- Card: Altezza ----------
 	HeightSlider = MakeVisionSlider(-30.f, 30.f);
 	HeightValueText = MakeText(TEXT("0 cm"), 15.f, TextSecondary);
 	Column->AddChildToVerticalBox(MakeCard(TEXT("Altezza"), HeightSlider, HeightValueText));
 
-	// ---------- Card: Modalita' seduti ----------
 	SeatedCheck = WidgetTree->ConstructWidget<UCheckBox>(UCheckBox::StaticClass());
 	SeatedCheck->SetRenderScale(FVector2D(1.4f, 1.4f));
 	Column->AddChildToVerticalBox(MakeCard(TEXT("Modalita' seduti"), SeatedCheck, nullptr));
 
-	// ---------- Bottone pill: Ricentra ----------
 	RecenterButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass());
 	FButtonStyle Pill = RecenterButton->GetStyle();
 
@@ -275,13 +269,13 @@ USlider* UVisionMenuWidget::MakeVisionSlider(float MinVal, float MaxVal)
 {
 	using namespace VisionStyle;
 
-	USlider* S = WidgetTree->ConstructWidget<USlider>(USlider::StaticClass());
-	S->SetMinValue(MinVal);
-	S->SetMaxValue(MaxVal);
-	S->SetSliderBarColor(SliderTrack);
-	S->SetSliderHandleColor(Accent);
+	USlider* SliderWidget = WidgetTree->ConstructWidget<USlider>(USlider::StaticClass());
+	SliderWidget->SetMinValue(MinVal);
+	SliderWidget->SetMaxValue(MaxVal);
+	SliderWidget->SetSliderBarColor(SliderTrack);
+	SliderWidget->SetSliderHandleColor(Accent);
 
-	FSliderStyle Style = S->GetWidgetStyle();
+	FSliderStyle Style = SliderWidget->GetWidgetStyle();
 	Style.SetBarThickness(6.f);
 
 	FSlateBrush Thumb;
@@ -293,8 +287,8 @@ USlider* UVisionMenuWidget::MakeVisionSlider(float MinVal, float MaxVal)
 	Style.SetNormalThumbImage(Thumb);
 	Style.SetHoveredThumbImage(Thumb);
 
-	S->SetWidgetStyle(Style);
-	return S;
+	SliderWidget->SetWidgetStyle(Style);
+	return SliderWidget;
 }
 
 UTextBlock* UVisionMenuWidget::MakeText(const FString& Text, float Size, FLinearColor Color)

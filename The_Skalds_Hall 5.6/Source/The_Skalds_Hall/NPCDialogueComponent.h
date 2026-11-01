@@ -71,7 +71,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Dialogue")
 	FName GreetingKey = TEXT("Saluto");
 
-	/** Calcola e interpola le curve bocca MetaHuman a partire dall'array di 15 visemi di OVR Lip Sync */
+	/** Calcola e interpola le curve bocca MetaHuman a partire dall'array di 15 visemi di OVR Lip Sync. */
 	UFUNCTION(BlueprintCallable, Category = "Dialogue|OVRLipSync")
 	static void CalculateMetaHumanLipCurves(
 		const TArray<float>& Visemes,

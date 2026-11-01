@@ -1,12 +1,14 @@
 #include "VisionMenuActor.h"
 #include "VisionMenuWidget.h"
 #include "Components/WidgetComponent.h"
+#include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
 
 AVisionMenuActor::AVisionMenuActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bTickEvenWhenPaused = true;
+
 	USceneComponent* Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
 
@@ -16,13 +18,11 @@ AVisionMenuActor::AVisionMenuActor()
 	MenuWidget->SetDrawSize(FVector2D(760.f, 620.f));
 	MenuWidget->SetTwoSided(true);
 	MenuWidget->SetWorldScale3D(FVector(0.07f));
-
 	MenuWidget->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	MenuWidget->SetCollisionProfileName(TEXT("UI"));
 	MenuWidget->SetWindowFocusable(true);
 	MenuWidget->SetBlendMode(EWidgetBlendMode::Transparent);
 	MenuWidget->SetBackgroundColor(FLinearColor::Transparent);
-	// Scala mondo: 520px -> ~52 cm di larghezza
 }
 
 void AVisionMenuActor::BeginPlay()
@@ -42,7 +42,6 @@ void AVisionMenuActor::ToggleMenu()
 
 	if (bOpen)
 	{
-		// Riposiziona subito davanti al giocatore
 		SetActorLocation(ComputeTargetLocation());
 	}
 }
@@ -58,11 +57,9 @@ void AVisionMenuActor::Tick(float DeltaTime)
 		return;
 	}
 
-	// Follow morbido
 	const FVector Target = ComputeTargetLocation();
 	SetActorLocation(FMath::VInterpTo(GetActorLocation(), Target, DeltaTime, FollowSpeed));
 
-	// Sempre rivolto verso il giocatore
 	FRotator LookAt = (ViewLoc - GetActorLocation()).Rotation();
 	LookAt.Pitch = 0.f;
 	LookAt.Roll = 0.f;

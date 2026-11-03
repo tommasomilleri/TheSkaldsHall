@@ -11,7 +11,6 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputAction.h"
 #include "InputMappingContext.h"
-#include "InputCoreTypes.h"
 #include "GameFramework/PlayerController.h"
 #include "Engine/LocalPlayer.h"
 #include "UObject/ConstructorHelpers.h"
@@ -60,7 +59,6 @@ AMainMenuPawn::AMainMenuPawn()
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> CylinderMesh(TEXT("/Engine/BasicShapes/Cylinder.Cylinder"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMesh(TEXT("/Engine/BasicShapes/Sphere.Sphere"));
 	static ConstructorHelpers::FObjectFinder<UMaterialInterface> BaseMat(TEXT("/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial"));
-
 	if (CylinderMesh.Succeeded())
 	{
 		LeftLaser->SetStaticMesh(CylinderMesh.Object);
@@ -71,35 +69,25 @@ AMainMenuPawn::AMainMenuPawn()
 		LeftCursor->SetStaticMesh(SphereMesh.Object);
 		RightCursor->SetStaticMesh(SphereMesh.Object);
 	}
-	if (BaseMat.Succeeded())
-	{
-		LaserBaseMaterial = BaseMat.Object;
-	}
+	if (BaseMat.Succeeded()) LaserBaseMaterial = BaseMat.Object;
 
 	SetupHand(RightController, RightInteraction, RightLaser, RightCursor, 0);
 	SetupHand(LeftController, LeftInteraction, LeftLaser, LeftCursor, 1);
 
 	ClickRightAction = CreateDefaultSubobject<UInputAction>(TEXT("IA_MenuClickRight"));
 	ClickRightAction->ValueType = EInputActionValueType::Boolean;
-
 	ClickLeftAction = CreateDefaultSubobject<UInputAction>(TEXT("IA_MenuClickLeft"));
 	ClickLeftAction->ValueType = EInputActionValueType::Boolean;
 
 	MenuMappingContext = CreateDefaultSubobject<UInputMappingContext>(TEXT("IMC_MainMenu"));
-	for (const TCHAR* KeyName : RightClickKeys)
-	{
-		MenuMappingContext->MapKey(ClickRightAction, FKey(KeyName));
-	}
-	for (const TCHAR* KeyName : LeftClickKeys)
-	{
-		MenuMappingContext->MapKey(ClickLeftAction, FKey(KeyName));
-	}
+	for (const TCHAR* KeyName : RightClickKeys) MenuMappingContext->MapKey(ClickRightAction, FKey(KeyName));
+	for (const TCHAR* KeyName : LeftClickKeys)  MenuMappingContext->MapKey(ClickLeftAction, FKey(KeyName));
 }
 
-void AMainMenuPawn::SetupHand(UMotionControllerComponent* Controller, UWidgetInteractionComponent* Interaction,
+void AMainMenuPawn::SetupHand(UMotionControllerComponent* HandController, UWidgetInteractionComponent* Interaction,
 	UStaticMeshComponent* Laser, UStaticMeshComponent* Cursor, int32 PointerIndex)
 {
-	Interaction->SetupAttachment(Controller);
+	Interaction->SetupAttachment(HandController);
 	Interaction->InteractionDistance = InteractionDistance;
 	Interaction->InteractionSource = EWidgetInteractionSource::World;
 	Interaction->PointerIndex = PointerIndex;
@@ -113,7 +101,7 @@ void AMainMenuPawn::SetupHand(UMotionControllerComponent* Controller, UWidgetInt
 		M->SetCastShadow(false);
 		M->SetGenerateOverlapEvents(false);
 	}
-
+	// Il cilindro engine e' alto 100 cm lungo Z: Pitch -90 porta Z sul +X del puntatore.
 	Laser->SetRelativeRotation(FRotator(-90.f, 0.f, 0.f));
 	Cursor->SetRelativeScale3D(FVector(0.03f));
 	Cursor->SetVisibility(false);
@@ -122,8 +110,8 @@ void AMainMenuPawn::SetupHand(UMotionControllerComponent* Controller, UWidgetInt
 void AMainMenuPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	bHMDActive = UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled();
 
+	bHMDActive = UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled();
 	if (bHMDActive)
 	{
 		UHeadMountedDisplayFunctionLibrary::SetTrackingOrigin(EHMDTrackingOrigin::Stage);
@@ -140,16 +128,14 @@ void AMainMenuPawn::BeginPlay()
 		LeftInteraction->SetActive(false);
 		LeftInteraction->bEnableHitTesting = false;
 		for (UStaticMeshComponent* M : { LeftLaser, RightLaser, LeftCursor, RightCursor })
-		{
 			M->SetVisibility(false);
-		}
 	}
 }
 
 void AMainMenuPawn::ApplyLaserMaterial(UStaticMeshComponent* Mesh) const
 {
 	if (!Mesh || !LaserBaseMaterial) return;
-	if (UMaterialInstanceDynamic* MID = UMaterialInstanceDynamic::Create(LaserBaseMaterial, const_cast<AMainMenuPawn*>(this)))
+	if (UMaterialInstanceDynamic* MID = UMaterialInstanceDynamic::Create(LaserBaseMaterial, Mesh))
 	{
 		MID->SetVectorParameterValue(TEXT("Color"), LaserColor);
 		Mesh->SetMaterial(0, MID);
@@ -176,12 +162,8 @@ void AMainMenuPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	if (!PC) return;
 
 	if (ULocalPlayer* LP = PC->GetLocalPlayer())
-	{
 		if (UEnhancedInputLocalPlayerSubsystem* Sub = LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
-		{
 			Sub->AddMappingContext(MenuMappingContext, 100);
-		}
-	}
 
 	if (!bHMDActive)
 	{
@@ -197,7 +179,6 @@ void AMainMenuPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	if (!bHMDActive) return;
-
 	UpdateLaser(RightInteraction, RightLaser, RightCursor);
 	UpdateLaser(LeftInteraction, LeftLaser, LeftCursor);
 }
@@ -207,7 +188,6 @@ void AMainMenuPawn::UpdateLaser(UWidgetInteractionComponent* Interaction, UStati
 	float Length = InteractionDistance;
 	const FHitResult& Hit = Interaction->GetLastHitResult();
 	const bool bOverWidget = Interaction->IsOverHitTestVisibleWidget();
-
 	if (Hit.bBlockingHit)
 	{
 		const float HitDist = static_cast<float>(FVector::Dist(Interaction->GetComponentLocation(), Hit.ImpactPoint));
@@ -216,11 +196,9 @@ void AMainMenuPawn::UpdateLaser(UWidgetInteractionComponent* Interaction, UStati
 
 	Laser->SetRelativeLocation(FVector(Length * 0.5f, 0.f, 0.f));
 	Laser->SetRelativeScale3D(FVector(LaserThickness / 100.f, LaserThickness / 100.f, Length / 100.f));
+
 	Cursor->SetVisibility(bOverWidget);
-	if (bOverWidget)
-	{
-		Cursor->SetRelativeLocation(FVector(Length, 0.f, 0.f));
-	}
+	if (bOverWidget) Cursor->SetRelativeLocation(FVector(Length, 0.f, 0.f));
 }
 
 void AMainMenuPawn::OnClickRightPressed() { RightInteraction->PressPointerKey(EKeys::LeftMouseButton); }

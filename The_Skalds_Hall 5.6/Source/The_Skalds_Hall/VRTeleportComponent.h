@@ -2,18 +2,13 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Engine/TimerHandle.h"
 #include "VRTeleportComponent.generated.h"
 
-/**
- * Teleport ad arco parabolico con "blink" alla Half-Life: Alyx
- * (fade nero rapidissimo durante lo spostamento: la tecnica
- * anti-motion-sickness più efficace esistente).
- *
- * Da aggiungere al Pawn del giocatore. Richiede:
- *  - "NavigationSystem" nel Build.cs
- *  - un NavMeshBoundsVolume nel livello (altrimenti nessuna
- *    destinazione risulterà mai valida).
- */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnTeleportArcUpdated,
+	const TArray<FVector>&, Points, FVector, Destination, bool, bValid);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTeleported, FVector, NewLocation);
+
 UCLASS(ClassGroup = (VR), meta = (BlueprintSpawnableComponent))
 class THE_SKALDS_HALL_API UVRTeleportComponent : public UActorComponent
 {
@@ -22,12 +17,17 @@ class THE_SKALDS_HALL_API UVRTeleportComponent : public UActorComponent
 public:
 	UVRTeleportComponent();
 
+	UPROPERTY(BlueprintAssignable, Category = "VR|Teleport")
+	FOnTeleportArcUpdated OnArcUpdated;
+
+	UPROPERTY(BlueprintAssignable, Category = "VR|Teleport")
+	FOnTeleported OnTeleported;
+
 	/** Inizia a mirare (chiamalo quando spingi lo stick avanti). */
 	UFUNCTION(BlueprintCallable, Category = "VR|Teleport")
 	void StartAiming(USceneComponent* AimSource);
 
-	/** Conferma: blink + teleport. SnapYaw = rotazione snap pre-teleport
-	 *  (es. direzione del thumbstick al rilascio). */
+	/** Conferma: blink + teleport. */
 	UFUNCTION(BlueprintCallable, Category = "VR|Teleport")
 	void ConfirmTeleport(float SnapYaw = 0.f);
 
@@ -38,11 +38,11 @@ public:
 	UFUNCTION(BlueprintPure, Category = "VR|Teleport")
 	bool HasValidDestination() const { return bHasValidDest; }
 
-	/** Velocità iniziale dell'arco (cm/s). Più alta = arco più lungo. */
+	/** Velocita' iniziale dell'arco (cm/s). */
 	UPROPERTY(EditAnywhere, Category = "VR|Teleport", meta = (ClampMin = "100.0"))
 	float LaunchSpeed = 900.f;
 
-	/** Durata fade a nero (blink out). Alyx usa ~0.1s. */
+	/** Durata fade a nero (blink out). */
 	UPROPERTY(EditAnywhere, Category = "VR|Teleport", meta = (ClampMin = "0.01"))
 	float FadeOutTime = 0.1f;
 
@@ -60,7 +60,9 @@ protected:
 		FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
-	UPROPERTY() TObjectPtr<USceneComponent> Source;
+	UPROPERTY()
+	TObjectPtr<USceneComponent> Source;
+
 	FVector ValidDestination = FVector::ZeroVector;
 	bool bHasValidDest = false;
 	bool bTeleportInProgress = false;
@@ -68,4 +70,3 @@ private:
 	void DoTeleport(float SnapYaw);
 	FTimerHandle FadeTimer;
 };
-

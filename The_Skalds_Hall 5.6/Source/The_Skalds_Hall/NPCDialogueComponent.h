@@ -8,7 +8,7 @@ class UAudioComponent;
 class USoundBase;
 class USoundAttenuation;
 class USkeletalMeshComponent;
-class UAnimMontage;           
+class UAnimMontage;
 
 USTRUCT(BlueprintType)
 struct FDialogueLine
@@ -17,8 +17,11 @@ struct FDialogueLine
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USoundBase> Sound;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (AllowedClasses = "/Script/OVRLipSync.OVRLipSyncFrameSequence"))
 	TObjectPtr<UObject> LipSyncSequence;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (MultiLine = true))
 	FText Subtitle;
 
@@ -47,18 +50,28 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Dialogue")
 	TObjectPtr<USoundAttenuation> Attenuation;
 
-	UPROPERTY(BlueprintAssignable, Category = "Dialogue") FOnLineStarted OnLineStarted;
-	UPROPERTY(BlueprintAssignable, Category = "Dialogue") FOnLineFinished OnLineFinished;
+	UPROPERTY(BlueprintAssignable, Category = "Dialogue")
+	FOnLineStarted OnLineStarted;
 
-	UFUNCTION(BlueprintCallable, Category = "Dialogue") bool Say(FName LineKey);
-	UFUNCTION(BlueprintCallable, Category = "Dialogue") void Stop();
-	UFUNCTION(BlueprintPure, Category = "Dialogue") bool IsSpeaking() const { return bSpeaking; }
-	UFUNCTION(BlueprintCallable, Category = "Dialogue") void SayGreeting() { Say(GreetingKey); }
+	UPROPERTY(BlueprintAssignable, Category = "Dialogue")
+	FOnLineFinished OnLineFinished;
+
+	UFUNCTION(BlueprintCallable, Category = "Dialogue")
+	bool Say(FName LineKey);
+
+	UFUNCTION(BlueprintCallable, Category = "Dialogue")
+	void Stop();
+
+	UFUNCTION(BlueprintPure, Category = "Dialogue")
+	bool IsSpeaking() const { return bSpeaking; }
+
+	UFUNCTION(BlueprintCallable, Category = "Dialogue")
+	void SayGreeting() { Say(GreetingKey); }
 
 	UPROPERTY(EditAnywhere, Category = "Dialogue")
 	FName GreetingKey = TEXT("Saluto");
 
-	/** Calcola e interpola le curve bocca MetaHuman a partire dall'array di 15 visemi di OVR Lip Sync */
+	/** Calcola e interpola le curve bocca MetaHuman a partire dall'array di 15 visemi di OVR Lip Sync. */
 	UFUNCTION(BlueprintCallable, Category = "Dialogue|OVRLipSync")
 	static void CalculateMetaHumanLipCurves(
 		const TArray<float>& Visemes,
@@ -74,6 +87,7 @@ public:
 		UPARAM(ref) float& MouthUpperUpL,
 		UPARAM(ref) float& MouthUpperUpR,
 		float InterpSpeed = 20.f);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type Reason) override;
@@ -85,10 +99,16 @@ protected:
 	void BP_StopLipSync();
 
 private:
-	UPROPERTY(Transient) TObjectPtr<UAudioComponent> VoiceAudio;
-	UPROPERTY(Transient) TObjectPtr<USkeletalMeshComponent> BodyMesh;
+	UPROPERTY(Transient)
+	TObjectPtr<UAudioComponent> VoiceAudio;
+
+	UPROPERTY(Transient)
+	TObjectPtr<USkeletalMeshComponent> BodyMesh;
+
 	bool bSpeaking = false;
 
-	UFUNCTION() void HandleAudioFinished();
-	void InitVoice(); 
+	UFUNCTION()
+	void HandleAudioFinished();
+
+	void InitVoice();
 };

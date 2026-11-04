@@ -1,40 +1,39 @@
 #include "StoricaItem.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Sound/SoundBase.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
+#include "Engine/World.h"
+
 AStoricaItem::AStoricaItem()
 {
 	PrimaryActorTick.bCanEverTick = false;
+
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	SetRootComponent(Mesh);
-
 	Mesh->SetSimulatePhysics(true);
 	Mesh->SetNotifyRigidBodyCollision(true);
 	Mesh->SetCollisionProfileName(TEXT("PhysicsActor"));
 }
+
 void AStoricaItem::BeginPlay()
 {
 	Super::BeginPlay();
 	Mesh->OnComponentHit.AddDynamic(this, &AStoricaItem::OnItemHit);
 }
+
 void AStoricaItem::OnItemHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (!GetWorld()) return;
-	const float Impulse = NormalImpulse.Size();
-	if (Impulse < MinImpulse)
-	{
-		return;
-	}
 	const UWorld* World = GetWorld();
 	if (!World) return;
-	const float Now = World->GetTimeSeconds();
 
-	if (Now - LastImpactTime < ImpactCooldown)
-	{
-		return;
-	}
+	const float Impulse = NormalImpulse.Size();
+	if (Impulse < MinImpulse) return;
+
+	const float Now = World->GetTimeSeconds();
+	if (Now - LastImpactTime < ImpactCooldown) return;
 	LastImpactTime = Now;
 
 	const float Volume = FMath::GetMappedRangeValueClamped(

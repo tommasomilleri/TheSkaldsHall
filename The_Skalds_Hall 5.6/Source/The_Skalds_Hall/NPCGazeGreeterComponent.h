@@ -7,12 +7,12 @@
 class AGlassCardActor;
 class USoundBase;
 
-/**
- * Attaccalo a un NPC: se il player resta nel suo campo visivo
- * per GazeSecondsRequired secondi (con linea di vista libera),
- * riproduce una battuta audio e/o apre una scheda.
- */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGreet);
+
+/**
+ * Attaccalo a un NPC: se il player resta nel suo campo visivo per GazeSecondsRequired
+ * secondi (con linea di vista libera), riproduce una battuta audio e/o apre una scheda.
+ */
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class THE_SKALDS_HALL_API UNPCGazeGreeterComponent : public UActorComponent
 {
@@ -29,7 +29,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Greeter")
 	float SightHalfAngleDeg = 45.f;
 
-	/** Secondi di "contatto visivo" prima di attivarsi. */
+	/** Secondi di contatto visivo prima di attivarsi. */
 	UPROPERTY(EditAnywhere, Category = "Greeter")
 	float GazeSecondsRequired = 2.5f;
 
@@ -44,6 +44,7 @@ public:
 	/** true = si attiva una volta sola. */
 	UPROPERTY(EditAnywhere, Category = "Greeter")
 	bool bTriggerOnce = true;
+
 	UPROPERTY(BlueprintAssignable, Category = "Greeter")
 	FOnGreet OnGreet;
 

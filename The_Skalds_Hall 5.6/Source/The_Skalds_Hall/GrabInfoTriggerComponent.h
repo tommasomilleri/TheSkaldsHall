@@ -7,9 +7,7 @@
 class AGlassCardActor;
 
 /**
- * Attaccalo a un oggetto afferrabile: quando l'oggetto finisce
- * in mano al player (attaccato a un MotionController), apre
- * la scheda collegata. Al rilascio la richiude (opzionale).
+ * Apre la GlassCard collegata quando l'oggetto viene afferrato da un MotionController.
  */
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class THE_SKALDS_HALL_API UGrabInfoTriggerComponent : public UActorComponent
@@ -19,7 +17,6 @@ class THE_SKALDS_HALL_API UGrabInfoTriggerComponent : public UActorComponent
 public:
 	UGrabInfoTriggerComponent();
 
-	/** La scheda da aprire: assegnala nel Details (picker con la pipetta). */
 	UPROPERTY(EditInstanceOnly, Category = "Info Card")
 	TObjectPtr<AGlassCardActor> LinkedCard;
 

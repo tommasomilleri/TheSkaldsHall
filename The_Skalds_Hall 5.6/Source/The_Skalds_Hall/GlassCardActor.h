@@ -5,10 +5,11 @@
 #include "GlassCardActor.generated.h"
 
 class UWidgetComponent;
+class UStaticMeshComponent;
+class UMaterialInterface;
 
 /**
- * Scheda "fisica" nel mondo: fluttua, guarda il player,
- * si apre/chiude con animazione di scala.
+ * Scheda fisica nel mondo: fluttua, guarda il player, si apre/chiude con animazione di scala.
  */
 UCLASS()
 class THE_SKALDS_HALL_API AGlassCardActor : public AActor
@@ -17,8 +18,6 @@ class THE_SKALDS_HALL_API AGlassCardActor : public AActor
 
 public:
 	AGlassCardActor();
-
-	// --- Modificabili nel pannello Details dell'editor ---
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
 	FText Title;
@@ -41,8 +40,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Card")
 	bool bStartClosed = false;
 
-	// --- Chiamabili da codice (o Blueprint se servisse) ---
-
 	UFUNCTION(BlueprintCallable, Category = "Card")
 	void Open();
 
@@ -59,18 +56,19 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UWidgetComponent> CardWidget;
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UStaticMeshComponent> GlassPanel;
 
-	/** Materiale M_LiquidGlass (vedi note in fondo al file). */
+	/** Materiale M_LiquidGlass. */
 	UPROPERTY(EditAnywhere, Category = "Card|Style")
 	TObjectPtr<UMaterialInterface> GlassMaterial;
 
 private:
-	float BaseZ = 0.f;         // quota di partenza per l'ondeggiamento
-	float FloatTime = 0.f;     // accumulatore per il seno
+	float BaseZ = 0.f;
+	float FloatTime = 0.f;
 	bool bWasHeldLastTick = false;
-	float TargetScale = 1.f;   // scala verso cui animiamo
-	float CurrentScale = 1.f;  // scala attuale
-	bool IsHeld() const;       // è in mano al player?
+	float TargetScale = 1.f;
+	float CurrentScale = 1.f;
+	bool IsHeld() const;
 };

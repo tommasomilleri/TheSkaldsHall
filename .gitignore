@@ -58,6 +58,7 @@ Materiale/
 # Asset enormi scaricati (MetaHuman, Fab)
 **/Content/MetaHumans/
 **/Content/Fab/
+**/Content/NPCs/MH_Northern.uasset
 
 # Scena del banchetto
 **/Content/Scene_Banquet/

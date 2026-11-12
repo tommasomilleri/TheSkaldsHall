@@ -38,7 +38,12 @@ bool UNPCGazeGreeterComponent::CanSeePlayer() const
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(NPCGaze), false);
 	Params.AddIgnoredActor(Owner);
 	Params.AddIgnoredActor(Player);
-	const FVector EyeStart = Owner->GetActorLocation() + FVector(0.f, 0.f, 160.f);
+	FVector EyeStart = Owner->GetActorLocation() + FVector(0.f, 0.f, 160.f);
+	if (Owner->IsA<APawn>())
+	{
+		FRotator EyeRotation;
+		Owner->GetActorEyesViewPoint(EyeStart, EyeRotation);
+	}
 	const bool bBlocked = GetWorld()->LineTraceSingleByChannel(
 		Hit, EyeStart, PlayerEye, ECC_Visibility, Params);
 

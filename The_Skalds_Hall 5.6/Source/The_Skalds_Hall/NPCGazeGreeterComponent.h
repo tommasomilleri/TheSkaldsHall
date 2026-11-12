@@ -42,7 +42,8 @@ public:
 	TObjectPtr<AGlassCardActor> LinkedCard;
 
 	/** true = si attiva una volta sola. */
-	UPROPERTY(EditAnywhere, Category = "Greeter")
+	UPROPERTY(EditAnywhere, Category = "Greeter", meta = (ClampMin="0.0"))
+	float RetriggerCooldown = 20.f;
 	bool bTriggerOnce = true;
 
 	UPROPERTY(BlueprintAssignable, Category = "Greeter")
@@ -54,6 +55,7 @@ public:
 private:
 	float GazeTime = 0.f;
 	bool bTriggered = false;
+	float LastTriggerTime = -1.f;
 	bool CanSeePlayer() const;
 	void Trigger();
 };

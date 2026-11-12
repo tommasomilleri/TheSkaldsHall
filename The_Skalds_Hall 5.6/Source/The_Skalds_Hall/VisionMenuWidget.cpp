@@ -1,5 +1,6 @@
 #include "VisionMenuWidget.h"
 #include "VRSettingsSubsystem.h"
+#include "VisionMenuActor.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
 #include "Components/VerticalBox.h"
@@ -15,6 +16,7 @@
 #include "Components/SizeBox.h"
 #include "Engine/GameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 namespace VisionStyle
 {
@@ -26,6 +28,8 @@ namespace VisionStyle
 	const FLinearColor TextSecondary(1.f, 1.f, 1.f, 0.55f);
 	const FLinearColor SliderTrack(1.f, 1.f, 1.f, 0.22f);
 	const FLinearColor Accent(1.f, 1.f, 1.f, 1.f);
+
+	const FName MainMenuLevel(TEXT("/Game/Livelli/MenuPrincipale"));
 }
 
 TSharedRef<SWidget> UVisionMenuWidget::RebuildWidget()
@@ -67,43 +71,15 @@ TSharedRef<SWidget> UVisionMenuWidget::RebuildWidget()
 	SeatedCheck->SetRenderScale(FVector2D(1.4f, 1.4f));
 	Column->AddChildToVerticalBox(MakeCard(TEXT("Modalita' seduti"), SeatedCheck, nullptr));
 
-	RecenterButton = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass());
-	FButtonStyle Pill = RecenterButton->GetStyle();
+	RecenterButton = MakePillButton(TEXT("Ricentra vista"));
+	ResumeButton = MakePillButton(TEXT("Riprendi"));
+	MainMenuButton = MakePillButton(TEXT("Menu principale"));
+	QuitButton = MakePillButton(TEXT("Esci dal gioco"));
 
-	FSlateBrush PillNormal;
-	PillNormal.DrawAs = ESlateBrushDrawType::RoundedBox;
-	PillNormal.TintColor = FLinearColor(1.f, 1.f, 1.f, 0.14f);
-	PillNormal.OutlineSettings.CornerRadii = FVector4(26.f, 26.f, 26.f, 26.f);
-	PillNormal.OutlineSettings.RoundingType = ESlateBrushRoundingType::FixedRadius;
-	PillNormal.OutlineSettings.Width = 1.f;
-	PillNormal.OutlineSettings.Color = FLinearColor(1.f, 1.f, 1.f, 0.20f);
-	Pill.SetNormal(PillNormal);
-
-	FSlateBrush PillHover = PillNormal;
-	PillHover.TintColor = FLinearColor(1.f, 1.f, 1.f, 0.28f);
-	Pill.SetHovered(PillHover);
-
-	FSlateBrush PillPressed = PillNormal;
-	PillPressed.TintColor = FLinearColor(1.f, 1.f, 1.f, 0.38f);
-	Pill.SetPressed(PillPressed);
-
-	RecenterButton->SetStyle(Pill);
-
-	UTextBlock* RecenterLabel = MakeText(TEXT("Ricentra vista"), 17.f, TextPrimary);
-	{
-		FSlateFontInfo F = RecenterLabel->GetFont();
-		F.TypefaceFontName = FName("Bold");
-		RecenterLabel->SetFont(F);
-	}
-	RecenterButton->AddChild(RecenterLabel);
-	if (UButtonSlot* RSlot = Cast<UButtonSlot>(RecenterLabel->Slot))
-	{
-		RSlot->SetPadding(FMargin(34.f, 13.f));
-	}
-
-	UVerticalBoxSlot* BtnSlot = Column->AddChildToVerticalBox(RecenterButton);
-	BtnSlot->SetHorizontalAlignment(HAlign_Center);
-	BtnSlot->SetPadding(FMargin(0.f, 22.f, 0.f, 0.f));
+	UVerticalBoxSlot* RowSlot = Column->AddChildToVerticalBox(MakeButtonRow(RecenterButton, ResumeButton));
+	RowSlot->SetPadding(FMargin(0.f, 18.f, 0.f, 0.f));
+	RowSlot = Column->AddChildToVerticalBox(MakeButtonRow(MainMenuButton, QuitButton));
+	RowSlot->SetPadding(FMargin(0.f, 12.f, 0.f, 0.f));
 
 	return Super::RebuildWidget();
 }
@@ -127,6 +103,18 @@ void UVisionMenuWidget::NativeConstruct()
 	if (RecenterButton)
 	{
 		RecenterButton->OnClicked.AddUniqueDynamic(this, &UVisionMenuWidget::HandleRecenterClicked);
+	}
+	if (ResumeButton)
+	{
+		ResumeButton->OnClicked.AddUniqueDynamic(this, &UVisionMenuWidget::HandleResumeClicked);
+	}
+	if (MainMenuButton)
+	{
+		MainMenuButton->OnClicked.AddUniqueDynamic(this, &UVisionMenuWidget::HandleMainMenuClicked);
+	}
+	if (QuitButton)
+	{
+		QuitButton->OnClicked.AddUniqueDynamic(this, &UVisionMenuWidget::HandleQuitClicked);
 	}
 
 	if (UVRSettingsSubsystem* S = GetSettings())
@@ -188,6 +176,33 @@ void UVisionMenuWidget::HandleRecenterClicked()
 	{
 		S->RecenterView();
 	}
+}
+
+void UVisionMenuWidget::HandleResumeClicked()
+{
+	if (AVisionMenuActor* Menu = Cast<AVisionMenuActor>(
+		UGameplayStatics::GetActorOfClass(this, AVisionMenuActor::StaticClass())))
+	{
+		Menu->CloseMenu();
+	}
+}
+
+void UVisionMenuWidget::HandleMainMenuClicked()
+{
+	if (UVRSettingsSubsystem* S = GetSettings())
+	{
+		S->SaveSettings();
+	}
+	UGameplayStatics::OpenLevel(this, VisionStyle::MainMenuLevel);
+}
+
+void UVisionMenuWidget::HandleQuitClicked()
+{
+	if (UVRSettingsSubsystem* S = GetSettings())
+	{
+		S->SaveSettings();
+	}
+	UKismetSystemLibrary::QuitGame(this, GetOwningPlayer(), EQuitPreference::Quit, false);
 }
 
 UVRSettingsSubsystem* UVisionMenuWidget::GetSettings() const
@@ -300,4 +315,59 @@ UTextBlock* UVisionMenuWidget::MakeText(const FString& Text, float Size, FLinear
 	TB->SetFont(Font);
 	TB->SetColorAndOpacity(FSlateColor(Color));
 	return TB;
+}
+
+UButton* UVisionMenuWidget::MakePillButton(const FString& Label)
+{
+	using namespace VisionStyle;
+
+	UButton* Button = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass());
+	FButtonStyle Pill = Button->GetStyle();
+
+	FSlateBrush PillNormal;
+	PillNormal.DrawAs = ESlateBrushDrawType::RoundedBox;
+	PillNormal.TintColor = FLinearColor(1.f, 1.f, 1.f, 0.14f);
+	PillNormal.OutlineSettings.CornerRadii = FVector4(26.f, 26.f, 26.f, 26.f);
+	PillNormal.OutlineSettings.RoundingType = ESlateBrushRoundingType::FixedRadius;
+	PillNormal.OutlineSettings.Width = 1.f;
+	PillNormal.OutlineSettings.Color = FLinearColor(1.f, 1.f, 1.f, 0.20f);
+	Pill.SetNormal(PillNormal);
+
+	FSlateBrush PillHover = PillNormal;
+	PillHover.TintColor = FLinearColor(1.f, 1.f, 1.f, 0.28f);
+	Pill.SetHovered(PillHover);
+
+	FSlateBrush PillPressed = PillNormal;
+	PillPressed.TintColor = FLinearColor(1.f, 1.f, 1.f, 0.38f);
+	Pill.SetPressed(PillPressed);
+
+	Button->SetStyle(Pill);
+
+	UTextBlock* LabelText = MakeText(Label, 17.f, TextPrimary);
+	{
+		FSlateFontInfo F = LabelText->GetFont();
+		F.TypefaceFontName = FName("Bold");
+		LabelText->SetFont(F);
+	}
+	Button->AddChild(LabelText);
+	if (UButtonSlot* LabelSlot = Cast<UButtonSlot>(LabelText->Slot))
+	{
+		LabelSlot->SetPadding(FMargin(20.f, 13.f));
+		LabelSlot->SetHorizontalAlignment(HAlign_Center);
+	}
+	return Button;
+}
+
+UWidget* UVisionMenuWidget::MakeButtonRow(UButton* Left, UButton* Right)
+{
+	UHorizontalBox* Row = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+
+	UHorizontalBoxSlot* LeftSlot = Row->AddChildToHorizontalBox(Left);
+	LeftSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+	LeftSlot->SetPadding(FMargin(0.f, 0.f, 6.f, 0.f));
+
+	UHorizontalBoxSlot* RightSlot = Row->AddChildToHorizontalBox(Right);
+	RightSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+	RightSlot->SetPadding(FMargin(6.f, 0.f, 0.f, 0.f));
+	return Row;
 }

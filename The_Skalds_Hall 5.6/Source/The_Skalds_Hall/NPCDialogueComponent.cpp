@@ -45,7 +45,20 @@ void UNPCDialogueComponent::InitVoice()
 	VoiceAudio = NewObject<UAudioComponent>(Owner, TEXT("VoiceAudio"));
 	VoiceAudio->bAutoActivate = false;
 	VoiceAudio->bAllowSpatialization = true;
-	VoiceAudio->AttenuationSettings = Attenuation;
+	if (Attenuation)
+	{
+		VoiceAudio->AttenuationSettings = Attenuation;
+	}
+	else
+	{
+		VoiceAudio->bOverrideAttenuation = true;
+		FSoundAttenuationSettings& Voice = VoiceAudio->AttenuationOverrides;
+		Voice.bAttenuate = true;
+		Voice.bSpatialize = true;
+		Voice.AttenuationShape = EAttenuationShape::Sphere;
+		Voice.AttenuationShapeExtents = FVector(300.f, 0.f, 0.f);
+		Voice.FalloffDistance = 3000.f;
+	}
 	VoiceAudio->RegisterComponent();
 	VoiceAudio->AttachToComponent(
 		BodyMesh ? static_cast<USceneComponent*>(BodyMesh) : Owner->GetRootComponent(),

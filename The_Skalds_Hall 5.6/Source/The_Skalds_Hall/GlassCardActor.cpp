@@ -33,7 +33,7 @@ AGlassCardActor::AGlassCardActor()
 	{
 		GlassPanel->SetStaticMesh(PlaneMesh.Object);
 	}
-	GlassPanel->SetRelativeRotation(FRotator(90.f, 0.f, 90.f));
+	GlassPanel->SetRelativeRotation(FRotator(0.f, 90.f, -90.f));
 	GlassPanel->SetRelativeLocation(FVector(-0.5f, 0.f, 0.f));
 	GlassPanel->SetRelativeScale3D(FVector(0.52f, 0.18f, 1.f));
 	GlassPanel->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -46,11 +46,14 @@ void AGlassCardActor::BeginPlay()
 	TSharedRef<SWidget> Card = SNew(SGlassCardWidget).Title(Title).Body(Body);
 	Card->SetVisibility(EVisibility::HitTestInvisible);
 	CardWidget->SetSlateWidget(Card);
+	CardWidget->SetRedrawTime(0.25f);
 	if (GlassMaterial)
 	{
 		GlassPanel->SetMaterial(0, GlassMaterial);
 	}
-
+	else {
+		GlassPanel->SetVisibility(false);
+	}
 	BaseZ = GetActorLocation().Z;
 	CurrentScale = TargetScale = bStartClosed ? 0.f : 1.f;
 	Root->SetRelativeScale3D(FVector(FMath::Max(CurrentScale, 0.001f)));

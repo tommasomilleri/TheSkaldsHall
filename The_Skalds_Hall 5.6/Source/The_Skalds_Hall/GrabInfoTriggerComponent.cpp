@@ -77,10 +77,23 @@ bool UGrabInfoTriggerComponent::IsPlayerNear() const
 
 	return FVector::DotProduct(Cam->GetCameraRotation().Vector(), ToObject.GetSafeNormal()) >= MinDot;
 }
+void UGrabInfoTriggerComponent::NotifyTouched()
+{
+	if (const UWorld* World = GetWorld())
+	{
+		LastTouchTime = World->GetTimeSeconds();
+	}
+}
+
 bool UGrabInfoTriggerComponent::IsHeldNow() const
 {
 	const AActor* Owner = GetOwner();
-	if (!Owner || !Owner->GetRootComponent()) return false;
+	if (!Owner) return false;
+	if (const UHandGrabComponent* Grab = Owner->FindComponentByClass<UHandGrabComponent>())
+	{
+		return Grab->IsGrabbed();
+	}
+	if (!Owner->GetRootComponent()) return false;
 	for (const USceneComponent* P = Owner->GetRootComponent()->GetAttachParent(); P; P = P->GetAttachParent())
 	{
 		if (P->IsA<UMotionControllerComponent>())
@@ -96,7 +109,9 @@ void UGrabInfoTriggerComponent::TickComponent(float DeltaTime,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	if (!LinkedCard) return;
 
-	const bool bActive = bUseProximity ? IsPlayerNear() : IsHeldNow();
+	const UWorld* World = GetWorld();
+	const bool bTouched = bOpenOnTouch && World && (World->GetTimeSeconds() - LastTouchTime) < TouchHoldTime;
+	const bool bActive = bTouched || (bUseProximity ? IsPlayerNear() : IsHeldNow());
 	if (bActive)
 	{
 		InactiveTime = 0.f;

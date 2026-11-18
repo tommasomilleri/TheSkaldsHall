@@ -42,6 +42,18 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Info Card|Proximity", meta = (ClampMin = "-1.0", ClampMax = "1.0"))
 	float ProximityMinViewDot = 0.6f;
 
+	/** Toccare l'oggetto con la mano apre la scheda (anche se fisso). */
+	UPROPERTY(EditAnywhere, Category = "Info Card|Touch")
+	bool bOpenOnTouch = true;
+
+	/** Per quanti secondi resta aperta dopo l'ultimo tocco. */
+	UPROPERTY(EditAnywhere, Category = "Info Card|Touch", meta = (ClampMin = "0.1"))
+	float TouchHoldTime = 4.f;
+
+	/** Chiamata da VRHandComponent quando la mano tocca l'oggetto. */
+	UFUNCTION(BlueprintCallable, Category = "Info Card")
+	void NotifyTouched();
+
 	UFUNCTION(BlueprintPure, Category = "Info Card")
 	AGlassCardActor* GetCard() const { return LinkedCard; }
 
@@ -53,6 +65,7 @@ private:
 	bool bWasActive = false;
 	bool bUseProximity = false;
 	float InactiveTime = 0.f;
+	float LastTouchTime = -100.f;
 	bool IsHeldNow() const;
 	bool IsPlayerNear() const;
 	void SpawnCardIfNeeded();

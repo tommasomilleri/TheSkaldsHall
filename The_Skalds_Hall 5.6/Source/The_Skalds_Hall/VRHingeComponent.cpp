@@ -5,7 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 
 static const FName HandleTag(TEXT("Handle"));
-
+static const FName NoHighlightTag(TEXT("NoHighlight"));
 UVRHingeComponent::UVRHingeComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -40,9 +40,33 @@ FVector UVRHingeComponent::GetHandleLocation() const
 	{
 		if (C && C->ComponentHasTag(HandleTag))
 		{
+			if (const UPrimitiveComponent* P = Cast<UPrimitiveComponent>(C))
+			{
+				return P->Bounds.Origin;
+			}
 			return C->GetComponentLocation();
 		}
 	}
+
+	// Fallback sull'Owner: necessario se la maniglia (es. RingMesh) simula fisica
+	// e Chaos la stacca dalla gerarchia dei figli a runtime.
+	if (const AActor* Owner = GetOwner())
+	{
+		TArray<USceneComponent*> OwnerComps;
+		Owner->GetComponents<USceneComponent>(OwnerComps);
+		for (const USceneComponent* C : OwnerComps)
+		{
+			if (C && C->ComponentHasTag(HandleTag))
+			{
+				if (const UPrimitiveComponent* P = Cast<UPrimitiveComponent>(C))
+				{
+					return P->Bounds.Origin;
+				}
+				return C->GetComponentLocation();
+			}
+		}
+	}
+
 	for (const USceneComponent* C : Children)
 	{
 		if (const UPrimitiveComponent* P = Cast<UPrimitiveComponent>(C))
@@ -114,14 +138,54 @@ void UVRHingeComponent::Release()
 
 void UVRHingeComponent::SetHighlighted(bool bOn, UMaterialInterface* Material)
 {
+	TArray<UMeshComponent*> Meshes;
+
 	TArray<USceneComponent*> Children;
 	GetChildrenComponents(true, Children);
 	for (USceneComponent* C : Children)
 	{
 		if (UMeshComponent* M = Cast<UMeshComponent>(C))
 		{
-			M->SetOverlayMaterial(bOn ? Material : nullptr);
+			if (M->ComponentHasTag(HandleTag))
+			{
+				Meshes.AddUnique(M);
+			}
 		}
+	}
+
+	if (Meshes.Num() == 0)
+	{
+		if (AActor* Owner = GetOwner())
+		{
+			TArray<UMeshComponent*> OwnerMeshes;
+			Owner->GetComponents<UMeshComponent>(OwnerMeshes);
+			for (UMeshComponent* M : OwnerMeshes)
+			{
+				if (M && M->ComponentHasTag(HandleTag))
+				{
+					Meshes.AddUnique(M);
+				}
+			}
+		}
+	}
+
+	if (Meshes.Num() == 0)
+	{
+		for (USceneComponent* C : Children)
+		{
+			if (UMeshComponent* M = Cast<UMeshComponent>(C))
+			{
+				if (!M->ComponentHasTag(NoHighlightTag))
+				{
+					Meshes.AddUnique(M);
+				}
+			}
+		}
+	}
+
+	for (UMeshComponent* M : Meshes)
+	{
+		M->SetOverlayMaterial(bOn ? Material : nullptr);
 	}
 }
 

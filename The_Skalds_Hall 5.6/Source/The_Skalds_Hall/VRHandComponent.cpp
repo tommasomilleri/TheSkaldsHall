@@ -103,7 +103,8 @@ void UVRHandComponent::FindCandidates(UHandGrabComponent*& OutObject, UVRHingeCo
 		{
 			if (!H || H->IsGrabbed()) continue;
 			const float D = FVector::Dist(H->GetHandleLocation(), Palm);
-			if (D <= H->GrabRadius && D < BestHinge)
+			const float MaxDist = (Radius > GrabRadius) ? FMath::Max(Radius, H->GrabRadius) : H->GrabRadius;
+			if (D <= MaxDist && D < BestHinge)
 			{
 				BestHinge = D;
 				OutHinge = H;
